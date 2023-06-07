@@ -34,6 +34,15 @@ def find_num_steps( t_0 ,t_end, dt):
     '''
     return int((t_end - t_0)/dt) + 1
 
+def find_actual_dt(t_0, t_end, num_steps):
+    '''
+    Function that corrects the step size such that we can move from t_0 to t_end by only full steps 
+    t_0 : start time 
+    t_end : end time
+    num_steps : number of full steps performed
+    '''
+    return (t_end - t_0) / num_steps
+
 
 def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
     '''
