@@ -24,6 +24,17 @@ def euler_step(f, w_old, dt):
     w_new = w_old + dt * f(w_old)
     return w_new
 
+def find_num_steps( t_0 ,t_end, dt):
+    '''
+    Function to calculate how many steps we are able to take
+    We make sure that we are able to perform full step
+    t_0 : start time 
+    t_end : end time
+    dt : step size 
+    '''
+    return int((t_end - t_0)/dt) + 1
+
+
 def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
     '''
     dt : step length 
