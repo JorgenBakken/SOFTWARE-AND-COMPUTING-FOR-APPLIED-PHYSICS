@@ -9,13 +9,14 @@ def gamma_func(theta, beta, radius, dyC):
     radius: radius of ship (ship is assumed to a half circle)
     dyC: vertical displacement 
     '''
-    arccos_term = np.cos(beta / 2) - 4 * (1 - np.cos(theta)) / (3 * np.pi)
-    assert -1 <= arccos_term <= 1, "Value of 'a' is outside the range (-1, 1)"
+    arccos_term_1 = np.cos(beta / 2) - 4 * (1 - np.cos(theta)) / (3 * np.pi)
+    assert -1 <= arccos_term_1 <= 1, "Value of 'arccosterm_1' is outside the range [-1, 1]"
     
-    alpha = 2 * np.arccos(arccos_term)
-    assert -1 <= alpha <= 1, "Value of 'alpha' is outside the range (-1, 1)"
+    alpha = 2 * np.arccos(arccos_term_1)
+    arccos_term_2 = np.cos(alpha / 2) + dyC / radius
+    assert -1 <= arccos_term_2 <= 1, "Value of 'arccosterm_2' is outside the range [-1, 1]"
 
-    return 2 * np.arccos(np.cos(alpha / 2) + dyC / radius)
+    return 2 * np.arccos(arccos_term_2)
 
 def euler_step(f, t, w_old, dt):
     '''
