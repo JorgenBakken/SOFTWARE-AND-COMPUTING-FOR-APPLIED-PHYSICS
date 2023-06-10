@@ -100,3 +100,28 @@ def test_euler_step(t, w_old, dt):
     w_euler = hf.euler_step(f, t, w_old, dt)
 
     assert np.isclose(w_correct, w_euler), "The euler step should give a value close to the calculated step"
+
+@given(dt    = st.floats(min_value=0.000001, max_value=10000000),
+       t_0   = st.floats(min_value=-10000000, max_value=10000000),
+       t_end = st.floats(min_value=-10000000, max_value=10000000),
+       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000)),
+       f     = st.just(lambda t, w: np.sin(t) + w), 
+       step_function=st.just(hf.euler_step))
+def test_solve_ODE_shape_t_array(dt, t_0, t_end, w_0, f, step_function):
+    '''
+    Test the solve_ODE function
+    Check the shape of the time array
+
+    Inputs:
+    dt             : Step length
+    t_0            : Start time
+    t_end          : End time
+    w_0            : Initial step
+    f              : Function for the ODE
+    step_function  : Step function to use for solving the ODE
+
+    Asserts:
+    - The shape of the returned time array matches the expected shape
+    '''
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, step_function)
+    assert t_array.shape == (len(w_0),)
