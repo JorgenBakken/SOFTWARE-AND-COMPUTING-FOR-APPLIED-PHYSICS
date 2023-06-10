@@ -75,3 +75,28 @@ def test_find_actual_dt(t_0, t_end_extra, num_steps):
     new_dt = hf.find_actual_dt(t_0, t_end, num_steps)
     assert isinstance(new_dt, float), "The new dt should be a flaot"
     assert abs(t_0 + new_dt * num_steps - t_end) < tolerance, "Should reach the end point approximately"
+
+@given(t  = st.floats(min_value=-10000000, max_value=1000000),
+       w_old  = st.floats(min_value=-10000000, max_value=1000000),
+       dt = st.floats(min_value=-10000000, max_value=1000000))
+def test_euler_step(t, w_old, dt):
+    '''
+    Test the euler_step function
+    Creates a function f, finds the value after one step, compare the euler step to this value
+
+    Inputs:
+    f         : test function
+    t         : Current time
+    w_old     : Initial step
+    dt        : Step size
+    w_correct : Expected result computed using the Euler method
+    w_euler   : Result obtained from the euler_step function
+    '''
+    def f(t, w_old, dt):
+        return np.sin(t) + w_old
+
+    w_correct = w_old + dt * f(t, w_old, dt)
+
+    w_euler = hf.euler_step(f, t, w_old, dt)
+
+    assert np.isclose(w_correct, w_euler), "The euler step should give a value close to the calculated step"
