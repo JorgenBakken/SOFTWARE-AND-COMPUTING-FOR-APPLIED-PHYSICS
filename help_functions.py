@@ -30,7 +30,7 @@ def euler_step(f, t, w_old, dt):
     dt    : step size 
     w_new : new step
     '''
-    w_new = w_old + dt * f(t, w_old)
+    w_new = w_old + dt * f(t, w_old, dt)
     return w_new
 
 def find_num_steps( t_0 ,t_end, dt):
