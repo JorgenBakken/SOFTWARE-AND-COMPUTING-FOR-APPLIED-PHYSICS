@@ -17,16 +17,19 @@ def gamma_func(theta, beta, radius, dyC):
 
     return 2 * np.arccos(np.cos(alpha / 2) + dyC / radius)
 
-#Need an ode solver 
-def euler_step(f, w_old, dt):
+def euler_step(f, t, w_old, dt):
     '''
     Solve dw/dt = f(w), where w can be a vector
+    Performs one Euler step 
+
+    Inputs 
     f     : function 
+    t     : current time
     w_old : initial step 
     dt    : step size 
     w_new : new step
     '''
-    w_new = w_old + dt * f(w_old)
+    w_new = w_old + dt * f(t, w_old)
     return w_new
 
 def find_num_steps( t_0 ,t_end, dt):
