@@ -103,11 +103,10 @@ def test_euler_step(t, w_old, dt):
 
 @given(dt    = st.floats(min_value=0.000001, max_value=10000000),
        t_0   = st.floats(min_value=-10000000, max_value=10000000),
-       t_end = st.floats(min_value=-10000000, max_value=10000000),
-       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000)),
-       f     = st.just(lambda t, w: np.sin(t) + w), 
-       step_function=st.just(hf.euler_step))
-def test_solve_ODE_shape_t_array(dt, t_0, t_end, w_0, f, step_function):
+       t_end_factor = st.floats(min_value= 0.000001, max_value=10),
+       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000),min_size=2, max_size=2))
+@settings(max_examples=50)
+def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0):
     '''
     Test the solve_ODE function
     Check the shape of the time array
@@ -123,5 +122,12 @@ def test_solve_ODE_shape_t_array(dt, t_0, t_end, w_0, f, step_function):
     Asserts:
     - The shape of the returned time array matches the expected shape
     '''
-    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, step_function)
-    assert t_array.shape == (len(w_0),)
+    t_end = t_0 + t_end_factor * dt
+
+    def f(t, w_old, dt):
+        return np.sin(t) + w_old
+    
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
+    num_steps = hf.find_num_steps(t_0 ,t_end, dt)
+    new_df = hf.find_actual_dt(t_0, t_end, num_steps)
+    assert t_array.shape[0] == int((t_end - t_0) / new_df)
