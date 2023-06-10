@@ -55,3 +55,23 @@ def test_find_num_steps(t_0 ,t_end_extra, dt):
     assert isinstance(num_steps, int), "Number of steps should be an integer"
     assert t_0 + num_steps * dt >= t_end, "Should be able to reach the end"
 
+@given(t_0 = st.floats(min_value=-10000000,max_value=10000000), 
+       t_end_extra = st.floats(min_value=0.000001, max_value=10000000), 
+       num_steps = st.integers(min_value= 1, max_value=1000000))
+def test_find_actual_dt(t_0, t_end_extra, num_steps):
+    '''
+    Test the correctness of the find_actual_dt function.
+    It checks whether the computed time step correctly reaches the specified end time
+    by comparing the expected end time with the actual end time.
+    
+    Parameters:
+    t_0 (float)        : Start time
+    t_0 (float)        : End time 
+    t_end_extra (float): Extra time added to the start time to compute the end time
+    num_steps (int)    : Number of steps
+    '''
+    t_end = t_0 + t_end_extra
+    tolerance = 0.0000001
+    new_dt = hf.find_actual_dt(t_0, t_end, num_steps)
+    assert isinstance(new_dt, float), "The new dt should be a flaot"
+    assert abs(t_0 + new_dt * num_steps - t_end) < tolerance, "Should reach the end point approximately"
