@@ -82,7 +82,7 @@ def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, step_function):
     w_matrix[0,:] = w_0
 
     for i in range(0, num_steps):
-        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], m, h, IC)
+        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], m, h, IC, dt)
     return t_array, w_matrix
 
 
