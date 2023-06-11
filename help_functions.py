@@ -54,14 +54,17 @@ def find_actual_dt(t_0, t_end, num_steps):
     return (t_end - t_0) / num_steps
 
 
-def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
+def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, step_function):
     '''
     dt : step length 
     t_0: start time 
     t_end: end time 
     w_0: start step
     num_step: number of steps
-    t_array : 
+    t_array : vector containing all the time step
+    m      : Mass of the ship
+    h      : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC     : The ship's moment of inertia with respect to the axis through C
     dt_actual: corrected to be able to seperate each time step in equidistant steps
     w_matrix : a matrix containing all the time steps of w
     '''
@@ -73,7 +76,7 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
     w_matrix[0,:] = w_0
 
     for i in range(0, num_steps):
-        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], dt_actual)
+        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], m, h, IC)
     return t_array, w_matrix
 
 
