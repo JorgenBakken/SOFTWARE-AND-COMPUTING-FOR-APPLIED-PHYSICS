@@ -185,3 +185,36 @@ def test_solve_ODE_t0(dt, t_0, t_end_factor, w_0):
     t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
     assert np.isclose(t_array[0], t_0)
 
+
+@given(dt    = st.floats(min_value=0.000001, max_value=10000000),
+       t_0   = st.floats(min_value=-10000000, max_value=10000000),
+       t_end_factor = st.floats(min_value= 0.000001, max_value=10),
+       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000),min_size = 1))
+@settings(max_examples=50)
+def test_solve_ODE_t_end(dt, t_0, t_end_factor, w_0):
+    '''
+    Test the solve_ODE function
+    Check the last element of the time array
+
+    Inputs:
+    dt             : Step length
+    t_0            : Start time
+    t_end          : End time
+    t_end_factor   : factor to multiply with dt to get t_end, ensures not to many steps 
+    w_0            : Initial step
+
+    Asserts:
+    - The last element of the time array matches the end time
+    '''
+    t_end = t_0 + t_end_factor * dt
+    def f(t, w_old, dt):
+        return np.sin(t) + w_old
+     
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
+    print("")
+    print(len(t_array))
+    print(len(w_matrix))
+    print(dt)
+    print(t_0)
+    print(t_end)
+    assert np.isclose(t_array[-1], t_end)
