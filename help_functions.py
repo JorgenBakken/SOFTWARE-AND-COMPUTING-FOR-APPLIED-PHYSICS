@@ -175,5 +175,34 @@ def two_component_w_RHS_small_angle(t, w, m, h, IC):
 
     return updated_w
 
+def error_as_func_of_dt(target_value, dt_array, t_0, t_end, step_function, theta_0, m, h, IC): 
+    '''
+    Calculate the error between the computed solution and a target value for different step sizes (dt).
+
+    Inputs:
+    target_value   : The target value or true solution to compare against.
+    dt_array       : An array of different step sizes (dt) to test.
+    t_0            : The initial time of the system.
+    t_end          : The end time of the system.
+    step_function  : The numerical integration method to use (e.g., Euler's method, RK4).
+    theta_0        : The initial value of the angle (theta).
+    m              : The mass of the system.
+    h              : The distance between the midpoint of the deck (M) and the ship's center of mass (C).
+    IC             : The ship's moment of inertia with respect to the axis through C.
+
+    Returns:
+    actual_dt_array : Array containing the actual step sizes used by the numerical method.
+    error_array     : Array containing the absolute errors between the computed solution and the target value.
+    '''
+    error_array = np.zeros(len(dt_array))
+    actual_dt_array = np.zeros(len(dt_array))
+    w_0 = np.asarray([theta_0, 0])
+    
+    for i in range(len(dt_array)):
+        t, w_matrix = solve_ODE(dt_array[i], t_0, t_end, w_0, m, h, IC, f=two_component_w_RHS_small_angle, step_function=step_function)
+        error_array[i] = np.abs(w_matrix[-1, 0] - target_value)
+        actual_dt_array[i] = t[1] - t[0]
+    
+    return actual_dt_array, error_array
 
 
