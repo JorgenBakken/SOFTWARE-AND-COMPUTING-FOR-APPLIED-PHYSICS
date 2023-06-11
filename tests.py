@@ -211,10 +211,4 @@ def test_solve_ODE_t_end(dt, t_0, t_end_factor, w_0):
         return np.sin(t) + w_old
      
     t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
-    print("")
-    print(len(t_array))
-    print(len(w_matrix))
-    print(dt)
-    print(t_0)
-    print(t_end)
     assert np.isclose(t_array[-1], t_end)
