@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.constants
 
 def gamma_func(theta, beta, radius, dyC):
     '''
@@ -74,3 +75,41 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
     for i in range(0, num_steps):
         w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], dt_actual)
     return t_array, w_matrix
+
+
+# Implement f 
+
+def two_component_w_RHS(t, w, m, h, IC):
+    '''
+    Function that calculates the derivative of w (dw/dt) for a two-component system.
+    The function represents the right-hand side (RHS) of the differential equation.
+
+    Inputs:
+    t    : Current time
+    w    : Vector [w_0, w_1]
+           w_0 represents the angle theta
+           w_1 represents the angular velocity omega
+    m    : Mass of the ship
+    h    : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC   : The ship's moment of inertia with respect to the axis through C
+
+    Returns:
+    updated_w : Array containing the updated values of [w_0, w_1]
+    '''
+
+    # Gravitational constant
+    gravity_constant = scipy.constants.g
+
+    # Initialize array for updated values
+    updated_w = np.zeros(2)
+
+    # Calculate the derivative of theta (dw_0/dt)
+    updated_w[0] = w[1]
+
+    # Calculate the derivative of omega (dw_1/dt)
+    updated_w[1] = -m * gravity_constant * h * np.sin(w[0]) / IC
+
+    return updated_w
+
+
+
