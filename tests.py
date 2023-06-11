@@ -79,26 +79,32 @@ def test_find_actual_dt(t_0, t_end_extra, num_steps):
 
 @given(t  = st.floats(min_value=-10000000, max_value=1000000),
        w_old  = st.floats(min_value=-10000000, max_value=1000000),
-       dt = st.floats(min_value=-10000000, max_value=1000000))
-def test_euler_step(t, w_old, dt):
+       dt = st.floats(min_value=0.000001, max_value=1000000),       
+       m=st.floats(min_value=0.0001, max_value=1000000),
+       h=st.floats(min_value=0.0, max_value=1000),
+       IC=st.floats(min_value=0.000001, max_value=100.0))
+def test_euler_step(t, w_old, m, h, IC, dt):
     '''
     Test the euler_step function
     Creates a function f, finds the value after one step, compare the euler step to this value
 
     Inputs:
-    f         : test function
     t         : Current time
     w_old     : Initial step
+    m         : Mass of the ship
+    h         : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC        : The ship's moment of inertia with respect to the axis through C
     dt        : Step size
+    f         : Test function representing the derivative dw/dt
     w_correct : Expected result computed using the Euler method
     w_euler   : Result obtained from the euler_step function
     '''
-    def f(t, w_old, dt):
+    def f(t, w_old, m, h, IC):
         return np.sin(t) + w_old
 
-    w_correct = w_old + dt * f(t, w_old, dt)
+    w_correct = w_old + dt * f(t, w_old, m, h, IC)
 
-    w_euler = hf.euler_step(f, t, w_old, dt)
+    w_euler = hf.euler_step(f, t, w_old, m, h, IC, dt)
 
     assert np.isclose(w_correct, w_euler), "The euler step should give a value close to the calculated step"
 
