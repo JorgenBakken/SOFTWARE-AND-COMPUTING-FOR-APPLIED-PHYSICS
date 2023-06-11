@@ -43,9 +43,9 @@ def plot_small_angle_approx(dt, m, h, IC):
 
 # Define the constants
 R = 10  # Ship radius (m)
-Askip = 0.5 * np.pi * R ** 2  # Ship cross-sectional area (m^2)
+A_ship = 0.5 * np.pi * R ** 2  # Ship cross-sectional area (m^2)
 sigma = 500  # Ship mass density (kg/m^2)
-m = sigma * Askip  # Ship mass
+m = sigma * A_ship  # Ship mass
 dt = 0.001  # Time step size
 h = 4 * R / (3 * np.pi)  # Distance M - C
 IC = 0.5 * m * R ** 2 * (1 - 32 / (9 * np.pi ** 2)) #The ship's moment of inertia with respect to the axis through C
