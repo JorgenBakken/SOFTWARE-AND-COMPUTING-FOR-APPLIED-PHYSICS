@@ -157,3 +157,31 @@ def test_solve_ODE_shape_sol_array(dt, t_0, t_end_factor, w_0):
 
     t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
     assert w_matrix.shape == (len(t_array), len(w_0))
+
+@given(dt    = st.floats(min_value=0.000001, max_value=10000000),
+       t_0   = st.floats(min_value=-10000000, max_value=10000000),
+       t_end_factor = st.floats(min_value= 0.000001, max_value=10),
+       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000)))
+@settings(max_examples=50)
+def test_solve_ODE_t0(dt, t_0, t_end_factor, w_0):
+    '''
+    Test the solve_ODE function
+    Check the first element of the time array
+
+    Inputs:
+    dt             : Step length
+    t_0            : Start time
+    t_end          : End time
+    t_end_factor   : factor to multiply with dt to get t_end, ensures not to many steps 
+    w_0            : Initial step
+
+    Asserts:
+    - The first element of the time array matches the start time
+    '''
+    t_end = t_0 + t_end_factor * dt
+    def f(t, w_old, dt):
+        return np.sin(t) + w_old
+     
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
+    assert np.isclose(t_array[0], t_0)
+
