@@ -19,20 +19,26 @@ def gamma_func(theta, beta, radius, dyC):
 
     return 2 * np.arccos(arccos_term_2)
 
-def euler_step(f, t, w_old, dt):
+def euler_step(f, t, w_old, m, h, IC, dt):
     '''
     Solve dw/dt = f(w), where w can be a vector
     Performs one Euler step 
 
-    Inputs 
-    f     : function 
-    t     : current time
-    w_old : initial step 
-    dt    : step size 
-    w_new : new step
+    Inputs:
+    f      : Function that represents the derivative dw/dt
+    t      : Current time
+    w_old  : Initial step
+    m      : Mass of the ship
+    h      : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC     : The ship's moment of inertia with respect to the axis through C
+    dt     : Step size
+
+    Returns:
+    w_new  : New step after performing the Euler step
     '''
-    w_new = w_old + dt * f(t, w_old, dt)
+    w_new = w_old + dt * f(t, w_old, m, h, IC)
     return w_new
+
 
 def find_num_steps( t_0 ,t_end, dt):
     '''
