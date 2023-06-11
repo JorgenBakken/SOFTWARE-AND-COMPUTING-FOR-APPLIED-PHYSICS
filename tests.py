@@ -128,7 +128,7 @@ def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0):
     
     t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
     num_steps = hf.find_num_steps(t_0 ,t_end, dt)
-    assert t_array.shape[0] == num_steps
+    assert t_array.shape[0] == num_steps + 1
 
 @given(dt    = st.floats(min_value=0.000001, max_value=10000000),
        t_0   = st.floats(min_value=-10000000, max_value=10000000),
