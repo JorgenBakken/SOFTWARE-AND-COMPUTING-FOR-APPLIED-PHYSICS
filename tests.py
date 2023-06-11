@@ -277,3 +277,37 @@ def test_two_component_w_RHS_length(t, w, m, h, IC):
 
     assert len(updated_w) == 2,  "the updated w should have length 2"
 
+
+@given(t=st.floats(min_value=0.0, max_value=100.0),
+       w=st.lists(st.floats(min_value=-np.pi, max_value=np.pi), min_size=2, max_size=2),
+       m=st.floats(min_value=0.0001, max_value=1000000),
+       h=st.floats(min_value=0.0, max_value=1000),
+       IC=st.floats(min_value=0.000001, max_value=100.0))
+def test_two_component_w_RHS_theta_update(t, w, m, h, IC):
+    '''
+    Test for the two_component_w_RHS function.
+
+    Inputs:
+    t    : Current time
+    w    : Vector [w_0, w_1] representing initial values of theta and omega
+    m    : Mass of the ship
+    h    : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC   : The ship's moment of inertia with respect to the axis through C
+
+    Checks:
+    - Checks if the calculated derivative of theta is equal to the given value of omega.
+    '''
+
+    # Calculate the derivative using the function
+    updated_w = hf.two_component_w_RHS(t, w, m, h, IC)
+
+    assert np.isclose(updated_w[0], w[1])
+
+    # Calculate the expected derivative of omega
+    gravity_constant = scipy.constants.g
+    expected_w1 = -m * gravity_constant * h * np.sin(w[0]) / IC
+
+    # Check if the calculated derivative of omega matches the expected value
+    assert np.isclose(updated_w[1], expected_w1)
+
+
