@@ -39,6 +39,29 @@ def euler_step(f, t, w_old, m, h, IC, dt):
     w_new = w_old + dt * f(t, w_old, m, h, IC)
     return w_new
 
+def RK4_step(f, t, w, m, h, IC, dt):
+    '''
+    Runge-Kutta 4th order (RK4) step function for solving ODEs.
+
+    Inputs:
+    f: The function defining the ODE (e.g., f(t, w, m, h, IC)).
+    t: The current time.
+    w: The current value of the solution.
+    m: Mass of the ship.
+    h: Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C).
+    IC: The ship's moment of inertia with respect to the axis through C.
+    dt: The time step size.
+
+    Returns:
+    The new value of the solution at time t + dt.
+    '''
+    k1 = dt * f(t, w, m, h, IC)
+    k2 = dt * f(t + 0.5 * dt, w + 0.5 * k1, m, h, IC)
+    k3 = dt * f(t + 0.5 * dt, w + 0.5 * k2, m, h, IC)
+    k4 = dt * f(t + dt, w + k3, m, h, IC)
+    
+    return w + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+
 
 def find_num_steps( t_0 ,t_end, dt):
     '''
