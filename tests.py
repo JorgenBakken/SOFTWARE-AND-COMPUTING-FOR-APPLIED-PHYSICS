@@ -111,9 +111,12 @@ def test_euler_step(t, w_old, m, h, IC, dt):
 @given(dt    = st.floats(min_value=0.000001, max_value=10000000),
        t_0   = st.floats(min_value=-10000000, max_value=10000000),
        t_end_factor = st.floats(min_value= 0.1, max_value=10),
-       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000),min_size=2, max_size=2))
+       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000),min_size=2, max_size=2),
+       m=st.floats(min_value=0.0001, max_value=1000000),
+       h=st.floats(min_value=0.0, max_value=1000),
+       IC=st.floats(min_value=0.000001, max_value=100.0))
 @settings(max_examples=50)
-def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0):
+def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0, m, h, IC):
     '''
     Test the solve_ODE function
     Check the shape of the time array
@@ -124,16 +127,19 @@ def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0):
     t_end          : End time
     t_end_factor   : factor to multiply with dt to get t_end, ensures not to many steps 
     w_0            : Initial step
+    m         : Mass of the ship
+    h         : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
+    IC        : The ship's moment of inertia with respect to the axis through C
 
     Asserts:
     - The shape of the returned time array matches the expected shape
     '''
     t_end = t_0 + t_end_factor * dt
 
-    def f(t, w_old, dt):
+    def f(t, w_old, m, h, IC):
         return np.sin(t) + w_old
     
-    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step)
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, hf.euler_step)
     num_steps = hf.find_num_steps(t_0 ,t_end, dt)
     assert t_array.shape[0] == num_steps + 1
 
