@@ -108,6 +108,45 @@ def test_euler_step(t, w_old, m, h, IC, dt):
 
     assert np.isclose(w_correct, w_euler), "The euler step should give a value close to the calculated step"
 
+# RK4 test function
+
+@given(t=st.floats(min_value=-10000000, max_value=1000000),
+       w_old=st.floats(min_value=-10000000, max_value=1000000),
+       dt=st.floats(min_value=0.000001, max_value=1000000),
+       m=st.floats(min_value=0.0001, max_value=1000000),
+       h=st.floats(min_value=0.0, max_value=1000),
+       IC=st.floats(min_value=0.000001, max_value=100.0))
+def test_RK4_step(t, w_old, m, h, IC, dt):
+    '''
+    Test the RK4 step function.
+    Creates a function f, finds the value after one step, and compares the RK4 step to this value.
+
+    Inputs:
+    t         : Current time.
+    w_old     : Initial step.
+    m         : Mass of the ship.
+    h         : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C).
+    IC        : The ship's moment of inertia with respect to the axis through C.
+    dt        : Step size.
+    f         : Test function representing the derivative dw/dt.
+    w_correct : Expected result computed using the RK4 method.
+    w_rk4     : Result obtained from the RK4 step function.
+    '''
+    def f(t, w_old, m, h, IC):
+        return np.sin(t) + w_old
+
+    k1 = dt * f(t, w_old, m, h, IC)
+    k2 = dt * f(t + 0.5 * dt, w_old + 0.5 * k1, m, h, IC)
+    k3 = dt * f(t + 0.5 * dt, w_old + 0.5 * k2, m, h, IC)
+    k4 = dt * f(t + dt, w_old + k3, m, h, IC)
+
+    w_correct = w_old + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+
+    w_rk4 = hf.RK4_step(f, t, w_old, m, h, IC, dt)
+
+    assert np.isclose(w_correct, w_rk4), "The RK4 step should give a value close to the calculated step"
+
+
 @given(dt    = st.floats(min_value=0.000001, max_value=10000000),
        t_0   = st.floats(min_value=-10000000, max_value=10000000),
        t_end_factor = st.floats(min_value= 0.1, max_value=10),
