@@ -66,11 +66,11 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function):
     '''
     num_steps = find_num_steps(t_0,t_end,dt)
 
-    t_array, dt_actual = np.linspace(t_0, t_end, num_steps, retstep=True)
+    t_array, dt_actual = np.linspace(t_0, t_end, num_steps + 1, retstep=True)
 
-    w_matrix = np.zeros((num_steps, len(w_0)))
+    w_matrix = np.zeros((num_steps + 1, len(w_0)))
     w_matrix[0,:] = w_0
 
-    for i in range(0, num_steps - 1):
+    for i in range(0, num_steps):
         w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], dt_actual)
     return t_array, w_matrix
