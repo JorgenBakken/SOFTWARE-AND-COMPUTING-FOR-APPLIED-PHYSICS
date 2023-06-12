@@ -271,3 +271,75 @@ def six_component_w_RHS(t, w, m, h, IC, yC0 = 0, sigma0 = 0, R = 0):
 
     return updated_w
 
+def eight_component_w_RHS(t, w, m, h, IC, yC0 = 0, sigma0 = 0, R = 0):
+    '''
+    Calculate the derivatives of the state variables for a system of eight differential equations.
+
+    Inputs:
+    t       : Current time
+    w       : Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
+    yC0     : Ship's center of gravity (y-coordinate)
+    sigma0  : Water mass density (kg/m^2 per meter length)
+    R       : Radius of the ship
+    m       : Mass of the ship
+    h       : Distance between the midpoint of the deck and the ship's center of mass
+    IC      : Ship's moment of inertia with respect to the axis through the center of mass
+
+    Returns:
+    Array containing the updated derivatives of the state variables
+    '''
+
+    # Gravitational constant
+    gravitation_constant = scipy.constants.g
+
+    # Initialize the array for updated derivatives
+    updated_w = np.zeros(8)
+
+    # Derivative of theta (angular velocity)
+    updated_w[0] = w[4]
+
+    # Derivative of x-coordinate
+    updated_w[1] = w[5]
+
+    # Derivative of y-coordinate
+    updated_w[2] = w[6]
+
+    # Derivative of s
+    updated_w[3] = w[7]
+
+    # Auxiliary variables
+
+    # Vertical distance between the ship's center of gravity and the water surface
+    dyC = w[2] - yC0
+
+    # Angle of the circular segment of water displaced by the ship
+    gamma = gamma_func(w[0], dyC)
+
+    # Area of the circular segment of water displaced by the ship
+    A_water = 0.5 * R ** 2 * (gamma - np.sin(gamma))
+
+    # Buoyant force on the ship
+    F_B = sigma0 * A_water * gravitation_constant
+
+    # Torque due to buoyant force
+    tauB = -F_B * h * np.sin(w[0])
+
+    # Total torque on the ship (including torque from buoyant force and external load)
+    tauTOT = tauB
+
+    # Vertical force on the ship
+    F_y = F_B - m * gravitation_constant
+
+    # Derivative of angular velocity (omega dot)
+    updated_w[4] = tauTOT / IC
+
+    # Derivative of x-velocity (v_x)
+    updated_w[5] = 0
+
+    # Derivative of y-velocity (v_y)
+    updated_w[6] = F_y / m
+
+    # Derivative of s-velocity (v_s)
+    updated_w[7] = -gravitation_constant * np.sin(w[0])
+
+    return updated_w
