@@ -267,7 +267,7 @@ def analytical_solution_small_angle(t, theta_0, omega_freq):
     '''
     return theta_0 * np.cos(t * omega_freq)
 
-def six_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R):
+def six_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R, mL=0, fence=False):
     '''
     Calculate the derivatives of the state variables for a system of six differential equations.
 
