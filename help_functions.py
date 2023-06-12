@@ -233,3 +233,41 @@ def analytical_solution_small_angle(t, theta_0, omega_freq):
     '''
     return theta_0 * np.cos(t * omega_freq)
 
+def six_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R):
+    '''
+    Calculate the derivatives of the state variables for a system of six differential equations.
+
+    Inputs:
+    t        : Current time
+    w        : Vector representing the state variables [theta, x, y, omega, v_x, v_y]
+    yC0      : Ship's center of gravity (y-coordinate)
+    sigma0   : Water mass density (kg/m^2 per meter length)
+    R        : Radius of the ship
+    m        : Mass of the ship
+    h        : Distance between the midpoint of the deck and the ship's center of mass
+    IC       : Ship's moment of inertia with respect to the axis through the center of mass
+
+    Returns:
+    Array containing the updated derivatives of the state variables
+    '''
+    gravitation_constant = scipy.constants.g
+
+    updated_w = np.zeros(6)
+
+    updated_w[0] = w[3]  # Derivative of theta (angular velocity)
+    updated_w[1] = w[4]  # Derivative of x-coordinate
+    updated_w[2] = w[5]  # Derivative of y-coordinate
+
+    # Auxiliary variables
+    dyC = w[2] - yC0
+    gamma = gamma_func(w[0], dyC, R, dyC)
+    A_water = 0.5 * R ** 2 * (gamma - np.sin(gamma))
+    F_B = sigma0 * A_water * gravitation_constant
+    F_y = F_B - m * gravitation_constant
+
+    updated_w[3] = -F_B * h * np.sin(w[0]) / IC  # Derivative of angular velocity (omega dot)
+    updated_w[4] = 0                             # x-velocity (v_x) remains constant (assuming no external forces)
+    updated_w[5] = F_y / m                       # Derivative of y-velocity (v_y)
+
+    return updated_w
+
