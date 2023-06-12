@@ -219,3 +219,17 @@ def linear_function(x, a, b):
     '''
     return a * x + b
 
+def analytical_solution_small_angle(t, theta_0, omega_freq):
+    '''
+    Calculate the analytical solution for the angle of a simple harmonic oscillator with small angle approximation.
+
+    Inputs:
+    t          : Time array
+    theta_0    : Initial angle
+    omega_freq : Angular frequency
+
+    Returns:
+    The analytical solution
+    '''
+    return theta_0 * np.cos(t * omega_freq)
+
