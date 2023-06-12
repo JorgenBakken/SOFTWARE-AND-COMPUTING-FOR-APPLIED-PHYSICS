@@ -19,7 +19,7 @@ def gamma_func(theta, beta, radius, dyC):
 
     return 2 * np.arccos(arccos_term_2)
 
-def euler_step(f, t, w_old, m, h, IC, dt, yC0, sigma0, R):
+def euler_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
     '''
     Solve dw/dt = f(w), where w can be a vector
     Performs one Euler step 
@@ -36,8 +36,8 @@ def euler_step(f, t, w_old, m, h, IC, dt, yC0, sigma0, R):
     Returns:
     w_new  : New step after performing the Euler step
     '''
-    w_new = w_old + dt * f(t, w_old, m, h, IC, yC0, sigma0, R)
-    return w_new
+    return w + dt * f(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False)
+
 
 def RK4_step(f, t, w, m, h, IC, dt, yC0, sigma0, R):
     '''
