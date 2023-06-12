@@ -271,7 +271,7 @@ def six_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R):
 
     return updated_w
 
-def eight_component_w_RHS(t, w, m, h, IC, yC0 = 0, sigma0 = 0, R = 0):
+def eight_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R):
     '''
     Calculate the derivatives of the state variables for a system of eight differential equations.
 
@@ -313,7 +313,7 @@ def eight_component_w_RHS(t, w, m, h, IC, yC0 = 0, sigma0 = 0, R = 0):
     dyC = w[2] - yC0
 
     # Angle of the circular segment of water displaced by the ship
-    gamma = gamma_func(w[0], dyC)
+    gamma = gamma_func(w[0], dyC, R, dyC)
 
     # Area of the circular segment of water displaced by the ship
     A_water = 0.5 * R ** 2 * (gamma - np.sin(gamma))
