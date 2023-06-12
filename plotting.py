@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize
+import scipy.optimize
 
 import help_functions as hf
 
