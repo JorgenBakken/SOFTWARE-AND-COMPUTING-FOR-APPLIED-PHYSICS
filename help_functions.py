@@ -83,30 +83,64 @@ def find_actual_dt(t_0, t_end, num_steps):
     return (t_end - t_0) / num_steps
 
 
-def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, step_function, yC0, sigma0, R):
+def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, step_function, yC0, sigma0, R, mL, fence=False):
     '''
-    dt : step length 
-    t_0: start time 
-    t_end: end time 
-    w_0: start step
-    num_step: number of steps
-    t_array : vector containing all the time step
-    m      : Mass of the ship
-    h      : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC     : The ship's moment of inertia with respect to the axis through C
-    dt_actual: corrected to be able to seperate each time step in equidistant steps
-    w_matrix : a matrix containing all the time steps of w
+    Solve the system of ordinary differential equations using a specified step function.
+
+    Inputs:
+    dt            : Step length
+    t_0           : Start time
+    t_end         : End time
+    w_0           : Initial state vector
+    m             : Mass of the ship
+    h             : Distance between the midpoint of the deck and the ship's center of mass
+    IC            : Ship's moment of inertia with respect to the axis through the center of mass
+    step_function : Function for calculating the derivative of the state variables
+    yC0           : Ship's center of gravity (y-coordinate)
+    sigma0        : Water mass density (kg/m^2 per meter length)
+    R             : Radius of the ship
+    mL            : Mass of the load 
+    fence         : Boolean indicating if there is a fence (default: False)
+
+    Returns:
+    t_array   : Array containing all the time steps
+    w_matrix  : Matrix containing all the time steps of the state variables
     '''
-    num_steps = find_num_steps(t_0,t_end,dt)
 
-    t_array, dt_actual = np.linspace(t_0, t_end, num_steps + 1, retstep=True)
+    load_off = False
+    num_steps = find_num_steps(t_0, t_end, dt)
+    t_array, dt_actual = np.linspace(t_0, t_end, num_steps, retstep=True)
+    w_matrix = np.zeros((num_steps, len(w_0)))
+    w_matrix[0] = w_0
 
-    w_matrix = np.zeros((num_steps + 1, len(w_0)))
-    w_matrix[0,:] = w_0
+    for i in range(num_steps - 1):
+        w_matrix[i + 1] = step_function(dt_actual, t_array[i], t_array[i + 1], w_matrix[i], m, h, IC, step_function, yC0, sigma0, R, mL, fence)
 
-    for i in range(0, num_steps):
-        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], m, h, IC, dt_actual, yC0, sigma0, R)
+        # Capsize functionality
+        if len(w_0) == 2:
+            dyC = w_matrix[i + 1, 2] - yC0
+            gamma = gamma_func(w_matrix[i + 1, 0], dyC, R, dyC)
+            if np.abs(w_matrix[i + 1, 0]) > (np.pi - gamma) / 2:
+                print("The ship capsized at t: ", t_array[i])
+                w_matrix[i + 1:, 0] = np.sign(w_matrix[i, 0]) * np.pi / 2 * np.ones(len(w_matrix[i + 1:, 0]))
+                break
+
+        if len(w_0) == 8:
+            if np.abs(w_matrix[i + 1, 3]) > R and not load_off:
+                if fence:
+                    w_matrix[i + 1, 3] = np.sign(w_matrix[i + 1, 3]) * R
+                    w_matrix[i + 1, 7] = 0
+                else:
+                    load_off = True
+                    t_load_off = i + 1
+
+    if load_off:
+        w_matrix[t_load_off:, 3] = np.sign(w_matrix[t_load_off, 3]) * 3 * R * np.ones(len(w_matrix[t_load_off:, 3]))
+        w_matrix[t_load_off:, 7] = np.zeros(len(w_matrix[t_load_off:, 7]))
+
     return t_array, w_matrix
+
+
 
 
 # Implement f 
