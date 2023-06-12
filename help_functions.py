@@ -205,3 +205,17 @@ def error_as_func_of_dt(target_value, dt_array, t_0, t_end, step_function, theta
     
     return actual_dt_array, error_array
 
+def linear_function(x, a, b):
+    '''
+    Compute the value of a linear function given the input x.
+
+    Inputs:
+    x : Input value.
+    a : Coefficient of the linear term.
+    b : Constant term.
+
+    Returns:
+    Result of the linear function evaluation.
+    '''
+    return a * x + b
+
