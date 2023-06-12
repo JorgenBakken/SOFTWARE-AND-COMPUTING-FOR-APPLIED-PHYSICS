@@ -83,7 +83,7 @@ def find_actual_dt(t_0, t_end, num_steps):
     return (t_end - t_0) / num_steps
 
 
-def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, step_function, yC0, sigma0, R, mL, fence=False):
+def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, step_function, yC0, sigma0, R, mL, fence=False):
     '''
     Solve the system of ordinary differential equations using a specified step function.
 
@@ -114,10 +114,10 @@ def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, step_function, yC0, sigma0, R, mL, 
     w_matrix[0] = w_0
 
     for i in range(num_steps - 1):
-        w_matrix[i + 1] = step_function(dt_actual, t_array[i], t_array[i + 1], w_matrix[i], m, h, IC, step_function, yC0, sigma0, R, mL, fence)
+        w_matrix[i + 1] = step_function(f, dt_actual, t_array[i], w_matrix[i], m, h, IC, yC0, sigma0, R, mL, fence)
 
         # Capsize functionality
-        if len(w_0) == 2:
+        if len(w_0) > 2:
             dyC = w_matrix[i + 1, 2] - yC0
             gamma = gamma_func(w_matrix[i + 1, 0], dyC, R, dyC)
             if np.abs(w_matrix[i + 1, 0]) > (np.pi - gamma) / 2:
