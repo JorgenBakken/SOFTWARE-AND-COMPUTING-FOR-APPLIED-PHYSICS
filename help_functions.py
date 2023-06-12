@@ -39,7 +39,7 @@ def euler_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
     return w + dt * f(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False)
 
 
-def RK4_step(f, t, w, m, h, IC, dt, yC0, sigma0, R):
+def RK4_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
     '''
     Runge-Kutta 4th order (RK4) step function for solving ODEs.
 
@@ -55,10 +55,10 @@ def RK4_step(f, t, w, m, h, IC, dt, yC0, sigma0, R):
     Returns:
     The new value of the solution at time t + dt.
     '''
-    k1 = dt * f(t, w, m, h, IC, yC0, sigma0, R)
-    k2 = dt * f(t + 0.5 * dt, w + 0.5 * k1, m, h, IC, yC0, sigma0, R)
-    k3 = dt * f(t + 0.5 * dt, w + 0.5 * k2, m, h, IC, yC0, sigma0, R)
-    k4 = dt * f(t + dt, w + k3, m, h, IC, yC0, sigma0, R)
+    k1 = dt * f(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False)
+    k2 = dt * f(t + 0.5 * dt, w + 0.5 * k1, m, h, IC, yC0, sigma0, R, mL, fence=False)
+    k3 = dt * f(t + 0.5 * dt, w + 0.5 * k2, m, h, IC, yC0, sigma0, R, mL, fence=False)
+    k4 = dt * f(t + dt, w + k3, m, h, IC, yC0, sigma0, R, mL, fence=False)
     
     return w + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
 
