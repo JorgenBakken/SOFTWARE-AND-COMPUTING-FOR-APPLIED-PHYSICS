@@ -16,3 +16,6 @@ omega_freq = np.sqrt(sv.m * sv.g * sv.h / sv.IC)
 
 # Plotting the error as a function of the time step size for Euler and RK4 methods
 plotting.plot_error_step_function(dt_array, theta_0, omega_freq)
+
+# Plotting the ship's x-coordinate and y-coordinate as functions of time
+plotting.plot_ship_coordinates(dt=0.01)
