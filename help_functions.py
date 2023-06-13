@@ -49,24 +49,26 @@ def gamma_func(theta, dyC):
 
     return gamma
 
-def euler_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
-    '''
-    Solve dw/dt = f(w), where w can be a vector
-    Performs one Euler step 
+def euler_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
+    """
+    Performs one Euler step to solve the ODE dw/dt = f(w).
 
     Inputs:
     f      : Function that represents the derivative dw/dt
     t      : Current time
-    w_old  : Initial step
-    m      : Mass of the ship
-    h      : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC     : The ship's moment of inertia with respect to the axis through C
+    w      : Initial step
     dt     : Step size
+    fence  : Boolean flag indicating whether the fence is present (default: False)
+    kf     : Friction constant for the fence (default: sv.kf)
+    omegaW : Resonance frequency of the water (default: sv.omegaW)
+    FW0    : Initial force of the water (default: sv.FW0)
 
     Returns:
     w_new  : New step after performing the Euler step
-    '''
-    return w + dt * f(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False)
+    """
+
+    w_new = w + dt * f(t, w, fence, kf=kf, omegaW=omegaW, FW0=FW0)
+    return w_new
 
 
 def RK4_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
