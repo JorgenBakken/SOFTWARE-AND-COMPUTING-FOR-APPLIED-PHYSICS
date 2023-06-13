@@ -64,31 +64,26 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
     t_0 = 0
     t_end = 20
     target = hf.analytical_solution_small_angle(t_end, theta_0, omega_freq)
-    
+
     # Calculate errors for Euler and RK4 methods
-    dt_array_actual_euler, error_euler = hf.error_as_func_of_dt(target, dt_array, t_0, t_end, hf.euler_step, theta_0, m, h, IC)
-    dt_array_actual_RK4, error_RK4 = hf.error_as_func_of_dt(target, dt_array, t_0, t_end, hf.RK4_step, theta_0, m, h, IC)
-    
+    dt_array_actual_euler, error_euler = hf.error_as_func_of_dt(target, dt_array, t_0, t_end, hf.euler_step, theta_0)
+    dt_array_actual_RK4, error_RK4 = hf.error_as_func_of_dt(target, dt_array, t_0, t_end, hf.RK4_step, theta_0)
+
     # Fit a linear function to the logarithm of errors
     popt, pcov = scipy.optimize.curve_fit(hf.linear_function, np.log10(dt_array_actual_euler), np.log10(error_euler))
     popt2, pcov2 = scipy.optimize.curve_fit(hf.linear_function, np.log10(dt_array_actual_RK4), np.log10(error_RK4))
-    
+
     # Extract the slope from the fit parameters
-    slope_euler = popt[0]
-    slope_RK4 = popt2[0]
+    a_euler = popt[0]
+    a_RK4 = popt2[0]
 
     # Create the plot
     fig, ax = plt.subplots()
-    ax.plot(dt_array_actual_euler, error_euler, label="Euler step, slope=%.2f" % slope_euler)
-    ax.plot(dt_array_actual_RK4, error_RK4, label="RK4 step, slope=%.2f" % slope_RK4)
+    ax.plot(dt_array_actual_euler, error_euler, label="Euler, slope=%.2f" %(a_euler))
+    ax.plot(dt_array_actual_RK4, error_RK4, label="RK4, slope=%.2f" %(a_RK4))
     ax.set_yscale("log")
     ax.set_xscale("log")
-    ax.set_xlabel("Step Size (dt)")
-    ax.set_ylabel("Error")
-    ax.set_title("Error for different step functions as a result of step size")
-    ax.legend()
     plt.show()
-
 
 def plot_coordinates(dt, m, h, IC, yC0, sigma0, R):
     '''
