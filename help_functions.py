@@ -277,43 +277,41 @@ def analytical_solution_small_angle(t, theta_0, omega_freq):
     '''
     return theta_0 * np.cos(t * omega_freq)
 
-def six_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R, mL=0, fence=False):
+def six_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
     Calculate the derivatives of the state variables for a system of six differential equations.
 
     Inputs:
-    t        : Current time
-    w        : Vector representing the state variables [theta, x, y, omega, v_x, v_y]
-    yC0      : Ship's center of gravity (y-coordinate)
-    sigma0   : Water mass density (kg/m^2 per meter length)
-    R        : Radius of the ship
-    m        : Mass of the ship
-    h        : Distance between the midpoint of the deck and the ship's center of mass
-    IC       : Ship's moment of inertia with respect to the axis through the center of mass
+    t       : Current time
+    w       : Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
+    fence   : Boolean indicating if there is a fence
+    kf      : Stiffness coefficient
+    omegaW  : Excitation frequency
+    FW0     : Excitation force
 
     Returns:
     Array containing the updated derivatives of the state variables
     '''
-    gravitation_constant = scipy.constants.g
 
     updated_w = np.zeros(6)
 
-    updated_w[0] = w[3]  # Derivative of theta (angular velocity)
-    updated_w[1] = w[4]  # Derivative of x-coordinate
-    updated_w[2] = w[5]  # Derivative of y-coordinate
+    updated_w[0] = w[3]   # Derivative of theta (angular velocity)
+    updated_w[1] = w[4]   # Derivative of x-coordinate
+    updated_w[2] = w[5]   # Derivative of y-coordinate
 
     # Auxiliary variables
-    dyC = w[2] - yC0
-    gamma = gamma_func(w[0], dyC, R, dyC)
-    A_water = 0.5 * R ** 2 * (gamma - np.sin(gamma))
-    F_B = sigma0 * A_water * gravitation_constant
-    F_y = F_B - m * gravitation_constant
+    dyC = w[2] - sv.yC0                                     # Vertical displacement of the center of mass
+    gamma = gamma_func(w[0], dyC)                           # Angle gamma
+    A_water = 0.5 * sv.R ** 2 * (gamma - np.sin(gamma))     # Area of the submerged part of the ship
+    FB = sv.sigma0 * A_water * sv.g                         # Buoyant force
+    Fy = FB - sv.m * sv.g                                   # Vertical force
 
-    updated_w[3] = -F_B * h * np.sin(w[0]) / IC  # Derivative of angular velocity (omega dot)
-    updated_w[4] = 0                             # x-velocity (v_x) remains constant (assuming no external forces)
-    updated_w[5] = F_y / m                       # Derivative of y-velocity (v_y)
+    updated_w[3] = -FB * sv.h * np.sin(w[0]) / sv.IC   # Derivative of angular velocity (omega dot)
+    updated_w[4] = 0                                   # x-velocity (v_x) remains constant (assuming no external forces)
+    updated_w[5] = Fy / sv.m                           # Derivative of y-velocity (v_y)
 
     return updated_w
+
 
 def eight_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False):
     '''
