@@ -90,12 +90,6 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
     plt.show()
 
 
-gravity_constant = scipy.constants.g
-dt_array = np.logspace(-1.5, -3.5, 20)
-theta_0 = 0.01
-omega_freq = np.sqrt(m*gravity_constant*h/IC)
-#plot_error_step_function(dt_array, theta_0, omega_freq)
-
 def plot_coordinates(dt, m, h, IC, yC0, sigma0, R):
     '''
     Plot the ship's x-coordinate and y-coordinate as functions of time, taking into account the varying water displacement area.
@@ -137,11 +131,3 @@ def plot_coordinates(dt, m, h, IC, yC0, sigma0, R):
     # Display the plot
     plt.tight_layout()
     plt.show()
-
-
-sigma0 = 1000
-dt = 0.01
-beta = 132.3464813597432
-yM0 = R * np.cos(beta / 2)
-yC0 = yM0 - h
-plot_coordinates(dt, m, h, IC, yC0, sigma0, R)
