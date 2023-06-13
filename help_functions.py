@@ -181,7 +181,7 @@ def two_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW
 
     return updated_w
 
-def two_component_w_RHS_small_angle(t, w, m, h, IC):
+def two_component_w_RHS_small_angle(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
     Function that calculates the derivative of w (dw/dt) for a two-component system using the small angle approximation.
     The function represents the right-hand side (RHS) of the differential equation.
@@ -191,25 +191,23 @@ def two_component_w_RHS_small_angle(t, w, m, h, IC):
     w    : Vector [w_0, w_1]
            w_0 represents the angle theta
            w_1 represents the angular velocity omega
-    m    : Mass of the ship
-    h    : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC   : The ship's moment of inertia with respect to the axis through C
+    fence: Boolean indicating whether the fence is present (default is False)
+    kf   : Spring constant of the fence (default is sv.kf)
+    omegaW: Angular velocity of the wind (default is sv.omegaW)
+    FW0  : Initial wind force (default is sv.FW0)
 
     Returns:
     updated_w : Array containing the updated values of [w_0, w_1]
     '''
 
-    # Gravitational constant
-    gravity_constant = scipy.constants.g
-
     # Initialize array for updated values
-    updated_w = np.zeros(2)
+    updated_w = np.zeros(2) 
 
     # Calculate the derivative of theta (dw_0/dt)
     updated_w[0] = w[1]
 
     # Apply small angle approximation for the derivative of omega (dw_1/dt)
-    updated_w[1] = -m * gravity_constant * h * w[0] / IC
+    updated_w[1] = - sv.m * sv.g * sv.h * w[0] / sv.IC
 
     return updated_w
 
