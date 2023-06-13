@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.optimize
 
 import help_functions as hf
+import ship_variables as sv
 
 def plot_small_angle_approx(dt):
     '''
@@ -85,43 +86,34 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
     ax.set_xscale("log")
     plt.show()
 
-def plot_ship_coordinates(dt, m, h, IC, yC0, sigma0, R):
+def plot_ship_coordinates(dt):
     '''
     Plot the ship's x-coordinate and y-coordinate as functions of time, taking into account the varying water displacement area.
 
     Inputs:
     dt      : Time step size
-    m       : Mass of the ship
-    h       : Distance between the midpoint of the deck and the ship's center of mass
-    IC      : Ship's moment of inertia with respect to the axis through the center of mass
-    yC0     : Ship's center of gravity (y-coordinate)
-    sigma0  : Water mass density (kg/m^2 per meter length)
-    R       : Radius of the ship
 
     Returns:
     None
     '''
-
     # Create subplots for x-coordinate and y-coordinate
     fig, axs = plt.subplots(ncols=2)
 
     # Set initial conditions
-    w_0 = np.asarray([20 * np.pi/180, 0, yC0, 0, 0, 0])
+    w_0 = np.asarray([20 * np.pi/180, 0 , sv.yC0, 0, 0, 0])
 
     # Solve the ODE using RK4 method
-    t, w_matrix = hf.solve_ODE(dt, t_0=0, t_end=20, w_0=w_0, m=m, h=h, IC=IC, f=hf.six_component_w_RHS, step_function=hf.RK4_step, yC0=yC0, sigma0=sigma0, R=R)
-    
+    t_array, w_matrix = hf.solve_ODE(dt, t_0=0, t_end=20, w_0=w_0, f=hf.six_component_w_RHS, step_function=hf.RK4_step)
+
     # Plot x-coordinate
-    axs[0].plot(t, w_matrix[:, 1], color="b")
-    axs[0].set_xlabel("Time (s)")
-    axs[0].set_ylabel("x-coordinate")
-    axs[0].set_title("Variation of x-coordinate over time")
+    axs[0].set_ylabel(r"$x$")
+    axs[0].set_xlabel(r"$t$")
+    axs[0].plot(t_array, w_matrix[:,1], color="b")
 
     # Plot y-coordinate
-    axs[1].plot(t, w_matrix[:, 2], color="b")
-    axs[1].set_xlabel("Time (s)")
-    axs[1].set_ylabel("y-coordinate")
-    axs[1].set_title("Variation of y-coordinate over time")
+    axs[1].set_ylabel(r"$y$")
+    axs[1].set_xlabel(r"$t$")
+    axs[1].plot(t_array, w_matrix[:,2], color="b")
 
     # Display the plot
     plt.tight_layout()
