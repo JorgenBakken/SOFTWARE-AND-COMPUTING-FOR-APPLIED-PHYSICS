@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.constants
 
-import help_functions as hf
+import help_functions_ship_variables as hf_ship_vars
 
 g = scipy.constants.g  # Gravitational acceleration (m/s^2)
 R = 10  # Ship's radius (m)
@@ -25,7 +25,7 @@ A0 = (m + mL_CONST) / sigma0  # Cross-sectional area of the fluid displaced by t
 m0 = sigma0 * A0  # Mass of the fluid displaced by the ship in equilibrium (kg)
 FB0 = (m + mL_CONST) * g  # Buoyant force acting on the ship in equilibrium (N)
 
-beta = hf.calculate_beta(sigma, sigma0)  # Sector angle in equilibrium (radians)
+beta = hf_ship_vars.calculate_beta(sigma, sigma0)  # Sector angle in equilibrium (radians)
 
 A_sector0 = 0.5 * beta * R ** 2  # Area of the sector of the circular segment of water displaced by the ship in equilibrium (m^2)
 A_triangle0 = 0.5 * R ** 2 * np.sin(beta)  # Area of the triangular segment of water displaced by the ship in equilibrium (m^2)
