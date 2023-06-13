@@ -91,59 +91,63 @@ def find_actual_dt(t_0, t_end, num_steps):
     return (t_end - t_0) / num_steps
 
 
-def solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, step_function, yC0, sigma0, R, mL, fence=False):
-    '''
-    Solve the system of ordinary differential equations using a specified step function.
+def solve_ODE(dt, t_0, t_end, w_0, f, step_function=RK4_step, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
+    """
+    Solves an ODE where the right-hand side is described by the function f using a specified step function.
 
     Inputs:
-    dt            : Step length
-    t_0           : Start time
-    t_end         : End time
-    w_0           : Initial state vector
-    m             : Mass of the ship
-    h             : Distance between the midpoint of the deck and the ship's center of mass
-    IC            : Ship's moment of inertia with respect to the axis through the center of mass
-    step_function : Function for calculating the derivative of the state variables
-    yC0           : Ship's center of gravity (y-coordinate)
-    sigma0        : Water mass density (kg/m^2 per meter length)
-    R             : Radius of the ship
-    mL            : Mass of the load 
-    fence         : Boolean indicating if there is a fence (default: False)
+    dt             : Step size
+    t_0            : Initial time
+    t_end          : End time
+    w_0            : Initial step
+    f              : Function that represents the derivative dw/dt
+    step_function  : Step function to use for solving the ODE (default: RK4_step)
+    fence          : Boolean flag indicating whether the fence is present (default: False)
+    kf             : Friction constant for the fence (default: sv.kf)
+    omegaW         : Resonance frequency of the water (default: sv.omegaW)
+    FW0            : Initial force of the water (default: sv.FW0)
 
     Returns:
-    t_array   : Array containing all the time steps
-    w_matrix  : Matrix containing all the time steps of the state variables
-    '''
+    t_array        : Array of time values
+    w_matrix       : Matrix of step values corresponding to each time value
+    """
 
     load_off = False
-    num_steps = find_num_steps(t_0, t_end, dt)
-    t_array, dt_actual = np.linspace(t_0, t_end, num_steps, retstep=True)
-    w_matrix = np.zeros((num_steps, len(w_0)))
+    number_steps = int((t_end - t_0) / dt) + 1  # Find the number of discrete t-values
+    # It's likely that dt doesn't divide evenly into t_0, so we find the dt value that is closest
+    t_array, dt_actual = np.linspace(t_0, t_end, number_steps, retstep=True)
+    # This is important, initializing w in this way makes the function work, regardless of the number of components in w
+    w_matrix = np.zeros((len(t_array), len(w_0)))
+    number_of_components = len(w_0)  # If greater than 6, we have a load
+
     w_matrix[0] = w_0
 
-    for i in range(num_steps - 1):
-        w_matrix[i + 1] = step_function(f, dt_actual, t_array[i], w_matrix[i], m, h, IC, yC0, sigma0, R, mL, fence)
+    for i in range(0, len(t_array) - 1):
+        w_matrix[i + 1] = step_function(f, t_array[i], w_matrix[i], dt_actual, fence, kf=kf, omegaW=omegaW, FW0=FW0)
 
-        # Capsize functionality
-        if len(w_0) > 2:
-            dyC = w_matrix[i + 1, 2] - yC0
-            gamma = gamma_func(w_matrix[i + 1, 0], dyC, R, dyC)
-            if np.abs(w_matrix[i + 1, 0]) > (np.pi - gamma) / 2:
-                print("The ship capsized at t: ", t_array[i])
+        # Capsizing functionality
+        if number_of_components > 2:
+            dyC = w_matrix[i + 1, 2] - sv.yC0
+            gamma = gamma_func(w_matrix[i + 1, 0], dyC)
+            if np.abs(w_matrix[i + 1, 0]) > (np.pi - gamma) / 2:  
                 w_matrix[i + 1:, 0] = np.sign(w_matrix[i, 0]) * np.pi / 2 * np.ones(len(w_matrix[i + 1:, 0]))
                 break
 
-        if len(w_0) == 8:
-            if np.abs(w_matrix[i + 1, 3]) > R and not load_off:
+        if number_of_components > 6:
+            if np.abs(w_matrix[i + 1, 3]) > sv.R and not load_off:
                 if fence:
-                    w_matrix[i + 1, 3] = np.sign(w_matrix[i + 1, 3]) * R
-                    w_matrix[i + 1, 7] = 0
+                    w_matrix[i + 1, 3] = np.sign(w_matrix[i + 1, 3]) * sv.R
+                    w_matrix[i + 1, 7] = 0  # We neglect the force transfer from the load to the fence
                 else:
+                    # If the load falls off the deck, the mass is set to 0 inside the f-function
+                    # But we mark where this happens so that we can set the coordinates of the load to a constant value after it has fallen off
                     load_off = True
                     t_load_off = i + 1
 
     if load_off:
-        w_matrix[t_load_off:, 3] = np.sign(w_matrix[t_load_off, 3]) * 3 * R * np.ones(len(w_matrix[t_load_off:, 3]))
+        # The choice of coordinates for the fallen off load is somewhat arbitrary, I chose 3*R
+        # where the sign indicates which side the load fell off on
+        w_matrix[t_load_off:, 3] = np.sign(w_matrix[t_load_off, 3]) * 3 * sv.R * np.ones(len(w_matrix[t_load_off:, 3]))
         w_matrix[t_load_off:, 7] = np.zeros(len(w_matrix[t_load_off:, 7]))
 
     return t_array, w_matrix
