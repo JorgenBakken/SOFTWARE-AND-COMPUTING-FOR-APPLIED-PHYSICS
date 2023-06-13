@@ -72,36 +72,37 @@ def test_find_actual_dt(t_0, t_end_extra, num_steps):
     assert isinstance(new_dt, float), "The new dt should be a flaot"
     assert abs(t_0 + new_dt * num_steps - t_end) < tolerance, "Should reach the end point approximately"
 
-@given(t  = st.floats(min_value=-10000000, max_value=1000000),
-       w_old  = st.floats(min_value=-10000000, max_value=1000000),
-       dt = st.floats(min_value=0.000001, max_value=1000000),       
-       m=st.floats(min_value=0.0001, max_value=1000000),
-       h=st.floats(min_value=0.0, max_value=1000),
-       IC=st.floats(min_value=0.000001, max_value=100.0))
-def test_euler_step(t, w_old, m, h, IC, dt):
+
+@given(t=st.floats(min_value=-10000000, max_value=1000000),
+       w_old=st.floats(min_value=-10000000, max_value=1000000),
+       dt=st.floats(min_value=0.000001, max_value=1000000),
+       fence=st.booleans(),
+       kf=st.floats(min_value=-10000000, max_value=1000000),
+       omegaW=st.floats(min_value=-10000000, max_value=1000000),
+       FW0=st.floats(min_value=-10000000, max_value=1000000))
+def test_euler_step(t, w_old, dt, fence, kf, omegaW, FW0):
     '''
     Test the euler_step function
-    Creates a function f, finds the value after one step, compare the euler step to this value
 
     Inputs:
     t         : Current time
     w_old     : Initial step
-    m         : Mass of the ship
-    h         : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC        : The ship's moment of inertia with respect to the axis through C
     dt        : Step size
-    f         : Test function representing the derivative dw/dt
-    w_correct : Expected result computed using the Euler method
-    w_euler   : Result obtained from the euler_step function
+    fence     : Boolean flag indicating whether the fence is present
+    kf        : Friction constant for the fence
+    omegaW    : Resonance frequency of the water
+    FW0       : Initial force of the water
     '''
-    def f(t, w_old, m, h, IC):
-        return np.sin(t) + w_old
+    def f(t, w, fence, kf, omegaW, FW0):
+        # Test function
+        return np.sin(t) + w
 
-    w_correct = w_old + dt * f(t, w_old, m, h, IC)
+    w_correct = w_old + dt * f(t, w_old, fence, kf, omegaW, FW0)
 
-    w_euler = hf.euler_step(f, t, w_old, m, h, IC, dt)
+    w_euler = hf.euler_step(f, t, w_old, dt, fence, kf, omegaW, FW0)
 
     assert np.isclose(w_correct, w_euler), "The euler step should give a value close to the calculated step"
+
 
 # RK4 test function
 
