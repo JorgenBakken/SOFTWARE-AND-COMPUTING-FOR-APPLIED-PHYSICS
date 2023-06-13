@@ -71,28 +71,30 @@ def euler_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0)
     return w_new
 
 
-def RK4_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
-    '''
-    Runge-Kutta 4th order (RK4) step function for solving ODEs.
+def RK4_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
+    """
+    Performs one step using the fourth-order Runge-Kutta (RK4) method to solve the ODE dw/dt = f(w).
 
     Inputs:
-    f: The function defining the ODE (e.g., f(t, w, m, h, IC)).
-    t: The current time.
-    w: The current value of the solution.
-    m: Mass of the ship.
-    h: Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C).
-    IC: The ship's moment of inertia with respect to the axis through C.
-    dt: The time step size.
+    f      : Function that represents the derivative dw/dt
+    t      : Current time
+    w      : Initial step
+    dt     : Step size
+    fence  : Boolean flag indicating whether the fence is present (default: False)
+    kf     : Friction constant for the fence (default: sv.kf)
+    omegaW : Resonance frequency of the water (default: sv.omegaW)
+    FW0    : Initial force of the water (default: sv.FW0)
 
     Returns:
-    The new value of the solution at time t + dt.
-    '''
-    k1 = dt * f(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False)
-    k2 = dt * f(t + 0.5 * dt, w + 0.5 * k1, m, h, IC, yC0, sigma0, R, mL, fence=False)
-    k3 = dt * f(t + 0.5 * dt, w + 0.5 * k2, m, h, IC, yC0, sigma0, R, mL, fence=False)
-    k4 = dt * f(t + dt, w + k3, m, h, IC, yC0, sigma0, R, mL, fence=False)
-    
-    return w + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+    w_new  : New step after performing the RK4 step
+    """
+
+    k1 = f(t, w, fence, kf=kf, omegaW=omegaW, FW0=FW0)
+    k2 = f(t + dt/2.0, w + (dt / 2) * k1, fence, kf=kf, omegaW=omegaW, FW0=FW0)
+    k3 = f(t + dt/2.0, w + (dt / 2) * k2, fence, kf=kf, omegaW=omegaW, FW0=FW0)
+    k4 = f(t + dt, w + dt * k3, fence, kf=kf, omegaW=omegaW, FW0=FW0)
+    w_new = w + (dt / 6) * (k1 + (2 * k2) + (2 * k3) + k4)
+    return w_new
 
 
 def find_num_steps( t_0 ,t_end, dt):
