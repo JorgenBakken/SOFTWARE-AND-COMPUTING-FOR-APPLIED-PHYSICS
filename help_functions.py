@@ -313,90 +313,50 @@ def six_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW
     return updated_w
 
 
-def eight_component_w_RHS(t, w, m, h, IC, yC0, sigma0, R, mL, fence=False):
+def eight_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
     Calculate the derivatives of the state variables for a system of eight differential equations.
 
     Inputs:
     t       : Current time
     w       : Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
-    m       : Mass of the ship
-    h       : Distance between the midpoint of the deck and the ship's center of mass
-    IC      : Ship's moment of inertia with respect to the axis through the center of mass
-    yC0     : Ship's center of gravity (y-coordinate)
-    sigma0  : Water mass density (kg/m^2 per meter length)
-    R       : Radius of the ship
-    mL      : Mass of the load
     fence   : Boolean indicating if there is a fence
+    kf      : Stiffness coefficient
+    omegaW  : Excitation frequency
+    FW0     : Excitation force
 
     Returns:
     Array containing the updated derivatives of the state variables
     '''
 
-    # Gravitational constant
-    gravitation_constant = scipy.constants.g
-
     # Initialize the array for updated derivatives
     updated_w = np.zeros(8)
 
-    # Derivative of theta (angular velocity)
-    updated_w[0] = w[4]
-
-    # Derivative of x-coordinate
-    updated_w[1] = w[5]
-
-    # Derivative of y-coordinate
-    updated_w[2] = w[6]
-
-    # Derivative of s
-    updated_w[3] = w[7]
+    updated_w[0] = w[4]    # Derivative of theta (angular velocity)
+    updated_w[1] = w[5]    # Derivative of x-coordinate
+    updated_w[2] = w[6]    # Derivative of y-coordinate
+    updated_w[3] = w[7]    # Derivative of s
 
     # Auxiliary variables
+    mL = sv.mL_CONST                                            # Mass of the load
+    dyC = w[2] - sv.yC0                                         # Vertical displacement of the center of mass
+    gamma = gamma_func(w[0], dyC)                               # Angle gamma
+    A_water = 0.5 * sv.R ** 2 * (gamma - np.sin(gamma))         # Area of the submerged part of the ship
+    FB = sv.sigma0 * A_water * sv.g                             # Buoyant force
+    tauB = -FB * sv.h * np.sin(w[0])                            # Torque due to buoyant force
+    N = -mL * sv.g * np.cos(w[0])                               # Normal force
+    tauL = N * w[3]                                             # Torque due to the load
+    tauTOT = tauB + tauL                                        # Total torque
+    Fy = FB - sv.m * sv.g - N * np.cos(w[0])                    # Vertical force
+    Fx = N * np.sin(w[0])                                       # Horizontal force
 
-    # Vertical distance between the ship's center of gravity and the water surface
-    dyC = w[2] - yC0
+    updated_w[4] = tauTOT / sv.IC        # Derivative of omega (angular acceleration)
+    updated_w[5] = Fx / sv.m             # Derivative of x-velocity
+    updated_w[6] = Fy / sv.m             # Derivative of y-velocity
+    updated_w[7] = -sv.g * np.sin(w[0])  # Derivative of s-velocity
 
-    # Angle of the circular segment of water displaced by the ship
-    gamma = gamma_func(w[0], dyC, R, dyC)
-
-    # Area of the circular segment of water displaced by the ship
-    A_water = 0.5 * R ** 2 * (gamma - np.sin(gamma))
-
-    # Buoyant force on the ship
-    F_B = sigma0 * A_water * gravitation_constant
-
-    # Torque due to buoyant force
-    tauB = -F_B * h * np.sin(w[0])
-
-    # Vertical force on the ship
-    F_y = F_B - m * gravitation_constant
-
-    # Force from the external load
-    N = -mL * gravitation_constant * np.cos(w[0])
-
-    # Torque from the external load
-    tauL = N * w[3]
-
-    # Total torque on the ship (including torque from buoyant force and external load)
-    tauTOT = tauB + tauL
-
-    # Horizontal force on the ship
-    F_x = N * np.sin(w[0])
-
-    # Derivative of angular velocity (omega dot)
-    updated_w[4] = tauTOT / IC
-
-    # Derivative of x-velocity (v_x)
-    updated_w[5] = F_x / m
-
-    # Derivative of y-velocity (v_y)
-    updated_w[6] = F_y / m
-
-    # Derivative of s-velocity (v_s)
-    updated_w[7] = -gravitation_constant * np.sin(w[0])
-
-    # Check if load falls off
-    if np.abs(w[3]) > R and not fence and mL > 0:
+    # When the load exceeds the boundaries of the ship and there is no fence present
+    if np.abs(w[3]) > sv.R and not fence and mL>0:
         mL = 0.0
 
     return updated_w
