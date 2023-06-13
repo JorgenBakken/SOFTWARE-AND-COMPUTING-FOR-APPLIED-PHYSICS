@@ -211,34 +211,42 @@ def two_component_w_RHS_small_angle(t, w, fence=False, kf=sv.kf, omegaW=sv.omega
 
     return updated_w
 
-def error_as_func_of_dt(target_value, dt_array, t_0, t_end, step_function, theta_0, m, h, IC): 
+def error_as_func_of_dt(target, dt_array, t_0, t_end, step_function, theta_0):
     '''
     Calculate the error between the computed solution and a target value for different step sizes (dt).
 
     Inputs:
-    target_value   : The target value or true solution to compare against.
+    target          : The target value or true solution to compare against.
     dt_array       : An array of different step sizes (dt) to test.
     t_0            : The initial time of the system.
     t_end          : The end time of the system.
     step_function  : The numerical integration method to use (e.g., Euler's method, RK4).
     theta_0        : The initial value of the angle (theta).
-    m              : The mass of the system.
-    h              : The distance between the midpoint of the deck (M) and the ship's center of mass (C).
-    IC             : The ship's moment of inertia with respect to the axis through C.
 
     Returns:
     actual_dt_array : Array containing the actual step sizes used by the numerical method.
     error_array     : Array containing the absolute errors between the computed solution and the target value.
     '''
+
+    # Initialize arrays for storing actual step sizes and errors
     error_array = np.zeros(len(dt_array))
     actual_dt_array = np.zeros(len(dt_array))
+
+    # Convert theta_0 to a numpy array for compatibility with solve_ODE function
     w_0 = np.asarray([theta_0, 0])
-    
+
+    # Iterate over the dt values
     for i in range(len(dt_array)):
-        t, w_matrix = solve_ODE(dt_array[i], t_0, t_end, w_0, m, h, IC, f=two_component_w_RHS_small_angle, step_function=step_function)
-        error_array[i] = np.abs(w_matrix[-1, 0] - target_value)
+        # Solve the ODE using the specified step size and step function
+        t, w_matrix = solve_ODE(dt_array[i], t_0, t_end, w_0, two_component_w_RHS_small_angle,
+                                step_function=step_function, fence=False)
+        
+        # Calculate the absolute error between the computed solution and the target value
+        error_array[i] = np.abs(w_matrix[-1, 0] - target)
+        
+        # Store the actual step size used by the numerical method
         actual_dt_array[i] = t[1] - t[0]
-    
+
     return actual_dt_array, error_array
 
 def linear_function(x, a, b):
