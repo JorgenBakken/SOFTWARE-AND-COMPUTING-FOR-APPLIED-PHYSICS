@@ -153,11 +153,7 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function=RK4_step, fence=False, kf=sv
     return t_array, w_matrix
 
 
-
-
-# Implement f 
-
-def two_component_w_RHS(t, w, m, h, IC):
+def two_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
     Function that calculates the derivative of w (dw/dt) for a two-component system.
     The function represents the right-hand side (RHS) of the differential equation.
@@ -174,18 +170,14 @@ def two_component_w_RHS(t, w, m, h, IC):
     Returns:
     updated_w : Array containing the updated values of [w_0, w_1]
     '''
-
-    # Gravitational constant
-    gravity_constant = scipy.constants.g
-
     # Initialize array for updated values
-    updated_w = np.zeros(2)
-
+    updated_w = np.zeros(2) 
+    
     # Calculate the derivative of theta (dw_0/dt)
     updated_w[0] = w[1]
 
     # Calculate the derivative of omega (dw_1/dt)
-    updated_w[1] = -m * gravity_constant * h * np.sin(w[0]) / IC
+    updated_w[1] = -sv.m * sv.g * sv.h * np.sin(w[0]) / sv.IC
 
     return updated_w
 
