@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.constants
+import ship_variables as sv
 
 def calculate_beta(sigma, sigma0):
     """
@@ -27,23 +27,27 @@ def calculate_beta(sigma, sigma0):
 
     return beta0
 
-def gamma_func(theta, beta, radius, dyC):
-    '''
-    Calculates the sector angle gamma
+def gamma_func(theta, dyC):
+    """
+    Calculates the value of gamma given the angle theta and the vertical displacement dyC.
 
-    theta: rotational angle 
-    beta: sector angle
-    radius: radius of ship (ship is assumed to a half circle)
-    dyC: vertical displacement 
-    '''
-    arccos_term_1 = np.cos(beta / 2) - 4 * (1 - np.cos(theta)) / (3 * np.pi)
-    assert -1 <= arccos_term_1 <= 1, "Value of 'arccosterm_1' is outside the range [-1, 1]"
-    
+    Inputs:
+    theta  : Angle theta
+    dyC    : Vertical displacement dyC
+
+    Returns:
+    gamma  : Value of gamma
+    """
+    arccos_term_1 = np.cos(sv.beta / 2) - 4 * (1 - np.cos(theta)) / (3 * np.pi)
+    assert np.logical_and(arccos_term_1 >= -1, arccos_term_1 <= 1).any(), "Value of 'arccosterm_1' is outside the range [-1, 1]"
     alpha = 2 * np.arccos(arccos_term_1)
-    arccos_term_2 = np.cos(alpha / 2) + dyC / radius
-    assert -1 <= arccos_term_2 <= 1, "Value of 'arccosterm_2' is outside the range [-1, 1]"
 
-    return 2 * np.arccos(arccos_term_2)
+    arccos_term_2 = np.cos(alpha / 2) + dyC / sv.R
+    assert np.logical_and(arccos_term_2 >= -1, arccos_term_2 <= 1).any(), "Value of 'arccosterm_2' is outside the range [-1, 1]"
+
+    gamma = 2 * np.arccos(arccos_term_2)
+
+    return gamma
 
 def euler_step(f, dt, t, w, m, h, IC, yC0, sigma0, R, mL, fence):
     '''
