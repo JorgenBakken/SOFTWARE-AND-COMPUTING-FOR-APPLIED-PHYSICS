@@ -85,7 +85,7 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
     ax.set_xscale("log")
     plt.show()
 
-def plot_coordinates(dt, m, h, IC, yC0, sigma0, R):
+def plot_ship_coordinates(dt, m, h, IC, yC0, sigma0, R):
     '''
     Plot the ship's x-coordinate and y-coordinate as functions of time, taking into account the varying water displacement area.
 
