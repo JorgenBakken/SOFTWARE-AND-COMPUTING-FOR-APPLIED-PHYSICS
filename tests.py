@@ -583,4 +583,29 @@ def test_analytical_solution_small_angle(t, theta_0, omega_freq):
     # Check if the result matches the expected result
     assert np.isclose(result, expected_result)
 
+@given(t=st.floats(min_value=-100, max_value=100),
+       theta=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+       fence=st.booleans())
+@settings(max_examples=50)
+def test_six_component_w_RHS_output_size(t, theta, fence):
+    """
+    Test the output size of the six_component_w_RHS function.
+
+    Inputs:
+    t       : Current time
+    theta   : Angle value
+    fence   : Boolean indicating if there is a fence
+
+    Returns:
+    None
+    """
+    # Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
+    w = np.asarray([theta, 0 , sv.yC0, 0, 0, 0])
+
+    # Call the function under test
+    result = hf.six_component_w_RHS(t, w, fence)
+
+    # Check if the output size is correct
+    assert len(result) == 6, f"Expected output size of 6, but got {len(result)} for t={t}, w={w}, fence={fence}"
+
     
