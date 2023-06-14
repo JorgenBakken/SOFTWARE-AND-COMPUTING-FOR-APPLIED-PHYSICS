@@ -695,7 +695,7 @@ def test_eight_component_w_RHS_output(t, theta, omega, fence):
     result = hf.eight_component_w_RHS(t, w, fence)
 
     # Check if the output dtype is float
-    assert result.dtype == np.float, "Output dtype is not float"
+    assert result.dtype == float, "Output dtype is not float"
 
     # Check if the output values are finite
     assert all(np.isfinite(value) for value in result), "Output values are not finite"
@@ -752,7 +752,7 @@ def test_eight_component_w_RHS_extended_output(t, theta, omega, fence):
     result = hf.eight_component_w_RHS_extended(t, w, fence)
 
     # Check if the output dtype is float
-    assert result.dtype == np.float
+    assert result.dtype == float
 
     # Check if the output values are within expected range
     assert np.all(np.isfinite(result))
