@@ -360,3 +360,57 @@ def eight_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.
         mL = 0.0
 
     return updated_w
+
+
+def eight_component_w_RHS_extended(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
+    '''
+    Calculate the derivatives of the state variables for a system of eight differential equations.
+
+    Inputs:
+    t       : Current time
+    w       : Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
+    fence   : Boolean indicating if there is a fence
+    kf      : Stiffness coefficient
+    omegaW  : Excitation frequency
+    FW0     : Excitation force
+
+    Returns:
+    Array containing the updated derivatives of the state variables
+    '''
+    
+    # Initialize the array for updated derivatives
+    updated_w = np.zeros(8)
+
+    updated_w[0] = w[4]    # Derivative of theta (angular velocity)
+    updated_w[1] = w[5]    # Derivative of x-coordinate
+    updated_w[2] = w[6]    # Derivative of y-coordinate
+    updated_w[3] = w[7]    # Derivative of s
+
+    # Auxiliary variables
+    mL = sv.mL_CONST                                            # Mass of the load
+    dyC = w[2] - sv.yC0                                         # Vertical displacement of the center of mass
+    gamma = gamma_func(w[0], dyC)                               # Angle gamma
+    A_water = 0.5 * sv.R ** 2 * (gamma - np.sin(gamma))         # Area of the submerged part of the ship
+    FB = sv.sigma0 * A_water * sv.g                             # Buoyant force
+    tauB = -FB * sv.h * np.sin(w[0])                            # Torque due to buoyant force
+    N = -mL * sv.g * np.cos(w[0])                               # Normal force
+    fH2O = -sv.R * gamma * w[4] * kf                            # Force due to water resistance
+    yD = sv.R * (np.cos(gamma / 2) - 1)                         # Vertical displacement of the water resistance force
+    taufH2O = fH2O * (w[2] - yD)                                # Torque due to water resistance
+    tauL = -N * w[3]                                            # Torque due to the load
+    FW = FW0 * np.cos(omegaW * t)                               # Wind force
+    tauFW = FW * w[2]                                           # Torque due to wind force
+    tauTOT = tauB + tauL + taufH2O + tauFW                      # Total torque
+    Fy = FB - sv.m * sv.g - N * np.cos(w[0])                    # Vertical force
+    Fx = N * np.sin(w[0]) + fH2O + FW                           # Horizontal force
+
+    updated_w[4] = tauTOT / sv.IC        # Derivative of omega (angular acceleration)
+    updated_w[5] = Fx / sv.m             # Derivative of x-velocity
+    updated_w[6] = Fy / sv.m             # Derivative of y-velocity
+    updated_w[7] = -sv.g * np.sin(w[0])  # Derivative of s-velocity
+
+    # When the load exceeds the boundaries of the ship and there is no fence present
+    if np.abs(w[3]) > sv.R and not fence and mL > 0:
+        mL = 0.0
+
+    return updated_w
