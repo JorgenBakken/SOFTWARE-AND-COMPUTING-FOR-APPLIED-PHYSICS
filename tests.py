@@ -39,15 +39,10 @@ def test_find_num_steps(t_0 ,t_end_extra, dt):
     Arguments 
     t_0         : start time 
     t_end_extra : distance from t_0 to t_end, to make sure t_end comes after t_0
-    t_end       : end time
     dt          : step size 
     '''
     t_end = t_0 + t_end_extra
     num_steps = hf.find_num_steps(t_0 ,t_end, dt)
-    print(":")
-    print(num_steps)
-    print(dt)
-    print(t_end_extra)
     assert isinstance(num_steps, int), "Number of steps should be an integer"
     assert t_0 + num_steps * dt >= t_end, "Should be able to reach the end"
 
