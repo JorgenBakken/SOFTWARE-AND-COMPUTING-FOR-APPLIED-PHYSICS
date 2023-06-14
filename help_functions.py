@@ -437,7 +437,7 @@ def calculate_capsizing(dt):
         initial_state = np.asarray([0, 0, sv.yC0, omega_array[i], 0, 0])
 
         # Solve the system of differential equations
-        t, w_matrix_RK4 = solve_ODE(dt, 0, 10, initial_state, eight_component_w_RHS_extended, step_function=RK4_step)
+        t, w_matrix_RK4 = solve_ODE(dt, 0, 10, initial_state, six_component_w_RHS, step_function=RK4_step)
 
         capsized = False
         capsizing_omega.append(omega_array[i])
@@ -454,3 +454,4 @@ def calculate_capsizing(dt):
             capsizing_time.append(-1)
 
     return capsizing_omega, capsizing_time 
+
