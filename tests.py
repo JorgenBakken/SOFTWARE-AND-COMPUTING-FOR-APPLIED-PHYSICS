@@ -726,3 +726,33 @@ def test_eight_component_w_RHS_extended_output_size(t, theta, omega, fence):
     # Check if the output size is correct
     assert len(result) == 8
 
+@given(t=st.floats(min_value=-100, max_value=100),
+    theta=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+    omega=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+    fence=st.booleans())
+@settings(max_examples=50)
+def test_eight_component_w_RHS_extended_output(t, theta, omega, fence):
+    """
+    Test the output dtype of the eight_component_w_RHS_extended function.
+    Test the output values of the eight_component_w_RHS_extended function.
+
+
+    Inputs:
+    t       : Current time
+    theta   : Initial angle
+    omega   : Initial angular velocity
+    fence   : Boolean indicating if there is a fence
+
+    Returns:
+    None
+    """
+    w = np.asarray([theta, 0, sv.yC0, 0, omega, 0, 0, 0])
+
+    # Call the function under test
+    result = hf.eight_component_w_RHS_extended(t, w, fence)
+
+    # Check if the output dtype is float
+    assert result.dtype == np.float
+
+    # Check if the output values are within expected range
+    assert np.all(np.isfinite(result))
