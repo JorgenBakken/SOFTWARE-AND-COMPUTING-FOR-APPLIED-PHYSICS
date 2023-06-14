@@ -414,3 +414,43 @@ def eight_component_w_RHS_extended(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW
         mL = 0.0
 
     return updated_w
+
+def calculate_capsizing(dt):
+    '''
+    Calculate the time it takes for the ship to capsize for different angular velocities.
+
+    Inputs:
+    dt: Time step size
+
+    Returns:
+    capsizing_omega: List of angular velocities at which the ship capsizes
+    capsizing_time: List of corresponding times to capsizing (or -1 if not capsized)
+    '''
+
+    # Array of angular velocities to test for capsizing
+    omega_array = np.linspace(0.2, 1.0, 20)
+    capsizing_omega = []
+    capsizing_time = []
+
+    for i in range(len(omega_array)):
+        # Set the initial state with the current angular velocity
+        initial_state = np.asarray([0, 0, sv.yC0, omega_array[i], 0, 0])
+
+        # Solve the system of differential equations
+        t, w_matrix_RK4 = solve_ODE(dt, 0, 10, initial_state, eight_component_w_RHS_extended, step_function=RK4_step)
+
+        capsized = False
+        capsizing_omega.append(omega_array[i])
+
+        # Check each time step for capsizing
+        for j in range(len(t)):
+            if np.isclose(np.abs(w_matrix_RK4[j, 0]), np.pi/2):
+                capsized = True
+                capsizing_time.append(t[j])
+                break
+
+        # If the ship doesn't capsize, append -1 to indicate no capsizing
+        if not capsized:
+            capsizing_time.append(-1)
+
+    return capsizing_omega, capsizing_time 
