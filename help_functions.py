@@ -113,7 +113,7 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function=RK4_step, fence=False, kf=sv
     """
 
     load_off = False
-    number_steps = int((t_end - t_0) / dt) + 1  # Find the number of discrete t-values
+    number_steps = int(np.ceil((t_end - t_0) / dt)) + 1  # Find the number of discrete t-values
     # It's likely that dt doesn't divide evenly into t_0, so we find the dt value that is closest
     t_array, dt_actual = np.linspace(t_0, t_end, number_steps, retstep=True)
     # This is important, initializing w in this way makes the function work, regardless of the number of components in w
