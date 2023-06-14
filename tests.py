@@ -487,5 +487,49 @@ def test_error_as_func_of_dt_size(t_0, t_end_extra, theta_0, dt_array, step_func
     assert len(actual_dt_array) == len(dt_array)
     assert len(error_array) == len(dt_array)
 
+@given(t_0=st.floats(min_value=0, max_value=10000000),
+    t_end_extra=st.floats(min_value=1, max_value=10),
+    theta_0=st.floats(min_value=-10000000, max_value=10000000),
+    dt_array=st.lists(st.floats(min_value=0.1, max_value=10), min_size=1),
+    step_function=st.just(hf.euler_step) | st.just(hf.RK4_step),
+    omega_freq=st.floats(0, np.pi))
+@settings(max_examples=50)
+def test_error_as_func_of_dt_values(t_0, t_end_extra, theta_0, dt_array, step_function, omega_freq):
+    """
+    Test the error_as_func_of_dt function for the values in the output arrays.
 
+    Inputs:
+    t_0            : The initial time of the system.
+    t_end_extra    : Additional time to add to t_0 for computing t_end.
+    theta_0        : The initial value of the angle (theta).
+    dt_array       : An array of different step sizes (dt) to test.
+    step_function  : The numerical integration method to use (e.g., Euler's method, RK4).
+    omega_freq     : Frequency of the harmonic oscillator.
+
+    Returns:
+    None
+    """
+    
+    t_end = t_0 + t_end_extra
+
+    # Calculate the target value using the analytical solution
+    target = hf.analytical_solution_small_angle(t_end, theta_0, omega_freq)
+
+    # Call the function under test
+    actual_dt_array, error_array = hf.error_as_func_of_dt(target, dt_array, t_0, t_end, step_function, theta_0)
+
+    # Check the values in the output arrays
+
+    # Check that all values in actual_dt_array are floats
+    assert all(isinstance(dt, float) for dt in actual_dt_array), "actual_dt_array contains non-float values"
+
+    # Check that all values in error_array are floats
+    assert all(isinstance(error, float) for error in error_array), "error_array contains non-float values"
+
+    # Check that all values in actual_dt_array are positive
+    assert all(dt > 0 for dt in actual_dt_array), "actual_dt_array contains non-positive values"
+
+    # Check that all values in actual_dt_array and error_array are finite
+    assert np.all(np.isfinite(actual_dt_array)), "actual_dt_array contains non-finite values"
+    assert np.all(np.isfinite(error_array)), "error_array contains non-finite values"
 
