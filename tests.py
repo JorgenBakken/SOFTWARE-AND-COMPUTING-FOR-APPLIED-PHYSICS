@@ -645,3 +645,29 @@ def test_six_component_w_RHS_output_size(t, theta, fence):
     assert np.allclose(result, expected_derivatives)
 
 
+@given(t=st.floats(min_value=-100, max_value=100),
+       theta=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+       omega=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+       fence=st.booleans())
+@settings(max_examples=50)
+def test_eight_component_w_RHS_output_size(t, theta, omega, fence):
+    """
+    Test the output size of the eight_component_w_RHS function.
+
+    Inputs:
+    t       : Current time
+    theta   : Initial angle
+    omega   : Initial angular velocity
+    fence   : Boolean indicating if there is a fence
+
+    Returns:
+    None
+    """
+    w = np.asarray([theta, 0, sv.yC0, 0, omega, 0, 0, 0])
+
+    # Call the function under test
+    result = hf.eight_component_w_RHS(t, w, fence)
+
+    # Check if the output size is correct
+    assert len(result) == 8
+
