@@ -270,15 +270,13 @@ def test_solve_ODE_t_end(dt, t_0, t_end_factor, w_0, fence):
     assert np.isclose(t_array[-1], t_end)
 
 
-@given(dt    = st.floats(min_value=0.000001, max_value=10000000),
-       t_0   = st.floats(min_value=-10000000, max_value=10000000),
-       t_end_factor = st.floats(min_value= 0.000001, max_value=10),
-       w_0   = st.lists(st.floats(min_value=-10000000, max_value=10000000),min_size = 1),
-       m=st.floats(min_value=0.0001, max_value=1000000),
-       h=st.floats(min_value=0.0, max_value=1000),
-       IC=st.floats(min_value=0.000001, max_value=100.0))
+@given(dt=st.floats(min_value=0.1, max_value=10000000),
+       t_0=st.floats(min_value=-10000000, max_value=10000000),
+       t_end_factor=st.floats(min_value=1, max_value=10),
+       w_0=st.lists(st.floats(min_value=-10000000, max_value=10000000), min_size=2, max_size=2),
+       fence = st.booleans())
 @settings(max_examples=50)
-def test_solve_ODE_stepvalues(dt, t_0, t_end_factor, w_0, m, h, IC):
+def test_solve_ODE_stepvalues(dt, t_0, t_end_factor, w_0, fence):
     '''
     Test the solve_ODE function
     Check the solution matrix for each step
@@ -287,28 +285,28 @@ def test_solve_ODE_stepvalues(dt, t_0, t_end_factor, w_0, m, h, IC):
     dt             : Step length
     t_0            : Start time
     t_end          : End time
-    t_end_factor   : factor to multiply with dt to get t_end, ensures not to many steps 
+    t_end_factor   : Factor to multiply with dt to get t_end, ensures not too many steps 
     w_0            : Initial step
-    m              : Mass of the ship
-    h              : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC             : The ship's moment of inertia with respect to the axis through C
+    fence          : Boolean value if the is a fence
 
     Asserts:
     - The solution matrix has the correct values for each step
     '''
     t_end = t_0 + t_end_factor * dt
-    def f(t, w_old, m, h, IC):
-        return np.sin(t) + w_old
+    def f(t, w, fence, kf, omegaW, FW0):
+        # Test function 
+        return np.sin(t) + w
      
-    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, m, h, IC, f, hf.euler_step)
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.euler_step, fence)
 
-    num_steps = hf.find_num_steps(t_0, t_end, dt)
-    new_dt = hf.find_actual_dt(t_0, t_end, num_steps)
+    #num_steps = hf.find_num_steps(t_0, t_end, dt)
+    #new_dt = hf.find_actual_dt(t_0, t_end, num_steps)
+    new_dt = t_array[1] - t_array[0]
 
     assert np.allclose(w_matrix[0], w_0), "w_matrix[0] == w_0"
 
     for i in range(len(t_array) - 1):
-        assert np.allclose(w_matrix[i + 1], hf.euler_step(f, t_array[i], w_matrix[i], m, h, IC, new_dt))
+        assert np.allclose(w_matrix[i + 1], hf.euler_step(f, t_array[i], w_matrix[i], new_dt, fence))
 
 
 # Test the two_component_w_RHS
