@@ -386,26 +386,22 @@ def test_two_component_w_RHS_omega_update(t, w, fence):
 
 @given(t=st.floats(min_value=0.0, max_value=100.0),
        w=st.lists(st.floats(min_value=-np.pi, max_value=np.pi), min_size=2, max_size=2),
-       m=st.floats(min_value=0.0001, max_value=1000000),
-       h=st.floats(min_value=0.0, max_value=1000),
-       IC=st.floats(min_value=0.000001, max_value=100.0))
-def test_two_component_w_RHS_small_angle_length(t, w, m, h, IC):
+       fence = st.booleans())
+def test_two_component_w_RHS_small_angle_length(t, w, fence):
     '''
     Test for the two_component_w_RHS_small_angle function.
 
     Inputs:
-    t    : Current time
-    w    : Vector [w_0, w_1] representing initial values of theta and omega
-    m    : Mass of the ship
-    h    : Distance between the midpoint of the deck, M, and the ship's center of mass, C (M - C)
-    IC   : The ship's moment of inertia with respect to the axis through C
+    t      : Current time
+    w      : Vector [w_0, w_1] representing initial values of theta and omega
+    fence  : Boolean value if the is a fence
 
     Checks:
     - The output has a length of 2
     '''
 
     # Calculate the derivative using the function
-    updated_w = hf.two_component_w_RHS_small_angle(t, w, m, h, IC)
+    updated_w = hf.two_component_w_RHS_small_angle(t, w, fence)
 
     assert len(updated_w) == 2,  "the updated w should have length 2"
 
