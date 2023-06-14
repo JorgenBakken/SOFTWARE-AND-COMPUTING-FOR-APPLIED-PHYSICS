@@ -557,3 +557,30 @@ def test_linear_function(x, a, b):
 
     # Check if the result matches the expected result
     assert np.isclose(result, expected_result)
+
+@given(t=st.floats(min_value=-100, max_value=100),
+       theta_0=st.floats(min_value=-100, max_value=100),
+       omega_freq=st.floats(min_value=0, max_value=np.pi))
+@settings(max_examples=50)
+def test_analytical_solution_small_angle(t, theta_0, omega_freq):
+    """
+    Test the analytical_solution_small_angle function for different input values.
+
+    Inputs:
+    t          : Time value
+    theta_0    : Initial angle
+    omega_freq : Angular frequency
+
+    Returns:
+    None
+    """
+    # Call the function under test
+    result = hf.analytical_solution_small_angle(t, theta_0, omega_freq)
+
+    # Calculate the expected result
+    expected_result = theta_0 * np.cos(t * omega_freq)
+
+    # Check if the result matches the expected result
+    assert np.isclose(result, expected_result)
+
+    
