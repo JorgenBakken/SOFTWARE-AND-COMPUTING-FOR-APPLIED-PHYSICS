@@ -509,7 +509,7 @@ def test_error_as_func_of_dt_values(t_0, t_end_extra, theta_0, dt_array, step_fu
     Returns:
     None
     """
-    
+
     t_end = t_0 + t_end_extra
 
     # Calculate the target value using the analytical solution
@@ -533,3 +533,27 @@ def test_error_as_func_of_dt_values(t_0, t_end_extra, theta_0, dt_array, step_fu
     assert np.all(np.isfinite(actual_dt_array)), "actual_dt_array contains non-finite values"
     assert np.all(np.isfinite(error_array)), "error_array contains non-finite values"
 
+@given(x=st.floats(min_value=-100, max_value=100),
+       a=st.floats(min_value=-100, max_value=100),
+       b=st.floats(min_value=-100, max_value=100))
+@settings(max_examples=50)
+def test_linear_function(x, a, b):
+    """
+    Test the linear_function for different input values.
+
+    Inputs:
+    x : Input value.
+    a : Coefficient of the linear term.
+    b : Constant term.
+
+    Returns:
+    None
+    """
+    # Call the function under test
+    result = hf.linear_function(x, a, b)
+
+    # Calculate the expected result
+    expected_result = a * x + b
+
+    # Check if the result matches the expected result
+    assert np.isclose(result, expected_result)
