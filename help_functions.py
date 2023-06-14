@@ -71,7 +71,7 @@ def RK4_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     return w_new
 
 
-def find_num_steps( t_0 ,t_end, dt):
+def find_num_steps(t_0 ,t_end, dt):
     '''
     Function to calculate how many steps we are able to take
     We make sure that we are able to perform full step
@@ -79,7 +79,7 @@ def find_num_steps( t_0 ,t_end, dt):
     t_end : end time
     dt : step size 
     '''
-    return int((t_end - t_0)/dt) + 1
+    return int(np.ceil((t_end - t_0) / dt)) + 1 
 
 def find_actual_dt(t_0, t_end, num_steps):
     '''
