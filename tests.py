@@ -608,4 +608,45 @@ def test_six_component_w_RHS_output_size(t, theta, fence):
     # Check if the output size is correct
     assert len(result) == 6, f"Expected output size of 6, but got {len(result)} for t={t}, w={w}, fence={fence}"
 
-    
+@given(t=st.floats(min_value=-100, max_value=100),
+       theta=st.floats(min_value=-np.pi/4, max_value=np.pi/4),
+       fence=st.booleans())
+@settings(max_examples=50)
+def test_six_component_w_RHS_output_size(t, theta, fence):
+    """
+    Test the derivative values of the six_component_w_RHS function
+
+    Inputs:
+    t       : Current time
+    theta   : Angle value
+    fence   : Boolean indicating if there is a fence
+
+    Returns:
+    None
+    """
+    # Vector representing the state variables [theta, x, y, s, omega, v_x, v_y, v_s]
+    w = np.asarray([theta, 0 , sv.yC0, 0, 0, 0])
+
+    # Call the function under test
+    result = hf.six_component_w_RHS(t, w, fence)
+
+    # Calculate the expected derivative values
+    expected_derivatives = np.zeros(6)
+    expected_derivatives[0] = w[3]
+    expected_derivatives[1] = w[4]
+    expected_derivatives[2] = w[5]
+
+    dyC = w[2] - sv.yC0                                     
+    gamma = hf.gamma_func(w[0], dyC)                         
+    A_water = 0.5 * sv.R ** 2 * (gamma - np.sin(gamma))    
+    FB = sv.sigma0 * A_water * sv.g                        
+    Fy = FB - sv.m * sv.g   
+
+    expected_derivatives[3] = -FB * sv.h * np.sin(w[0]) / sv.IC 
+    expected_derivatives[4] = 0
+    expected_derivatives[5] = Fy / sv.m  
+
+    # Check if the derivative values match the expected values
+    assert np.allclose(result, expected_derivatives)
+
+
