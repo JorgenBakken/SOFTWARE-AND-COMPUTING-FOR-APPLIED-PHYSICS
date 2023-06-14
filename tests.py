@@ -267,8 +267,6 @@ def test_solve_ODE_t_end(dt, t_0, t_end_factor, w_0, fence):
         return np.sin(t) + w
      
     t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.RK4_step, fence, sv.kf, sv.omegaW, sv.FW0)
-    print(t_array)
-    print("------------------------------")
     assert np.isclose(t_array[-1], t_end)
 
 
