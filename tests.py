@@ -145,11 +145,9 @@ def test_RK4_step(t, w_old, dt, fence, kf, omegaW, FW0):
        t_0=st.floats(min_value=-10000000, max_value=10000000),
        t_end_factor=st.floats(min_value=0.1, max_value=10),
        w_0=st.lists(st.floats(min_value=-10000000, max_value=10000000), min_size=2, max_size=2),
-       m=st.floats(min_value=0.0001, max_value=1000000),
-       h=st.floats(min_value=0.0, max_value=1000),
-       IC=st.floats(min_value=0.000001, max_value=100.0))
+       fence=st.booleans())
 @settings(max_examples=50)
-def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0, m, h, IC):
+def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0, fence):
     '''
     Test the solve_ODE function
     Check the shape of the time array
@@ -172,9 +170,9 @@ def test_solve_ODE_shape_t_array(dt, t_0, t_end_factor, w_0, m, h, IC):
         # Test function 
         return np.sin(t) + w
 
-    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.RK4_step, False, sv.kf, sv.omegaW, sv.FW0)
-    num_steps = int((t_end - t_0) / dt)
-    assert t_array.shape[0] == num_steps + 1
+    t_array, w_matrix = hf.solve_ODE(dt, t_0, t_end, w_0, f, hf.RK4_step, fence)
+    num_steps = int(np.ceil((t_end - t_0) / dt)) + 1
+    assert len(t_array) == num_steps
 
 
 @given(dt=st.floats(min_value=0.000001, max_value=10000000),
