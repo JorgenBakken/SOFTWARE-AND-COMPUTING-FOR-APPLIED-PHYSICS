@@ -118,3 +118,25 @@ def plot_ship_coordinates(dt):
     # Display the plot
     plt.tight_layout()
     plt.show()
+
+def plot_capsizing(dt):
+    '''
+    Plot the time it takes for the ship to capsize as a function of angular velocity.
+
+    Inputs:
+    dt: Time step size
+
+    Returns:
+    None
+    '''
+
+    # Calculate capsizing 
+    capsizing_omega, capsizing_time = hf.calculate_capsizing(dt)
+
+    # Plotting
+    plt.plot(capsizing_omega, capsizing_time, 'ro')
+    plt.xlabel('Angular Velocity (omega)')
+    plt.ylabel('Time to Capsizing (t)')
+    plt.title('Time to Capsizing as a Function of Angular Velocity (-1 if it does not capsize)')
+    plt.grid(True)
+    plt.show()
