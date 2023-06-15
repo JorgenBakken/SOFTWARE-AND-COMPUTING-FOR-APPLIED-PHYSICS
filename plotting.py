@@ -279,3 +279,33 @@ def animate_damping_effect():
         ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, stepsize=0.01)
 
 
+def animate_angle_with_fence():
+    """
+    Animate and plot the angle of a system with a fence over time.
+
+    Inputs:
+    None
+
+    Returns:
+    None
+    """
+
+    # Set initial conditions
+    theta_0 = 0
+    omega_0 = 2.0 * np.pi / 180
+    initial_conditions = np.asarray([theta_0, 0, sv.yC0, 0, omega_0, 0, 0, 0])
+    
+    # Solve the ODE and obtain the time and state matrices
+    t, w_matrix_RK4 = hf.solve_ODE(dt=0.01, t_0=0, t_end=240, w_0=initial_conditions,
+                                f=hf.eight_component_w_RHS_extended, step_function=hf.RK4_step,
+                                fence=True, kf=100, FW0=sv.FW0, omegaW=sv.omegaW)
+
+    # Extract the relevant quantities from the state matrix
+    theta_RK4 = w_matrix_RK4[:, 0]
+    x_C_RK4 = w_matrix_RK4[:, 1]
+    y_C_RK4 = w_matrix_RK4[:, 2]
+    s_L_RK4 = w_matrix_RK4[:, 3]
+
+    # Animate the deck movement with the given quantities
+    ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, fence=True, stepsize=0.1)
+
