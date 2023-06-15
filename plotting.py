@@ -141,6 +141,28 @@ def plot_capsizing(dt):
     plt.grid(True)
     plt.show()
 
+def plot_angle(t, theta1, theta2, label1, label2):
+    '''
+    Plot the angle of the mass pendulum.
+
+    Inputs:
+    - t: An array of time values.
+    - theta: An array of angle values.
+    - label: A string indicating the label for the plot.
+
+    Returns:
+    None
+    '''
+    plt.plot(t, theta1 * 180 / np.pi, label=label1)
+    plt.plot(t, theta2 * 180 / np.pi, label=label2)
+    plt.title('Angle')
+    plt.xlabel('$t$ (s)', fontsize=14)
+    plt.ylabel(r'$\theta$ (degrees)', fontsize=14)
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+
 
 def plot_pendulum_results(fence):
     '''
