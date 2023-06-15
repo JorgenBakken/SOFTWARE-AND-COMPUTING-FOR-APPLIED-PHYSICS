@@ -4,6 +4,7 @@ import scipy.optimize
 
 import help_functions as hf
 import ship_variables as sv
+import create_animation as ca
 
 def plot_small_angle_approx(dt):
     '''
@@ -241,5 +242,40 @@ def plot_damping_effect():
     plt.legend()
     plt.show()
 
+def animate_damping_effect():
+    """
+    Animates the damping effect on the ship's deck movement.
+
+    This function demonstrates the effect of damping on the ship's deck movement by solving the differential equations
+    using the Runge-Kutta 4th order method for different damping coefficients.
+
+    Returns:
+        None
+    """
+    theta_0 = 0  # Initial angular displacement
+    omega_0 = 0.4  # Initial angular velocity
+    w_0_eight = np.asarray([theta_0, 0, sv.yC0, 0, omega_0, 0, 0, 0])  # Initial conditions for the eight-component vector
+    mL = 0  # Mass of the load
+
+    # Array of damping coefficients
+    k_f_array = np.asarray([10, 500, 2000, 4000])
+
+    # Iterate over the damping coefficients
+    for i in range(len(k_f_array)):
+        # Solve the ordinary differential equations using the Runge-Kutta 4th order method
+        t, w_matrix_RK4 = hf.solve_ODE(dt=0.01, t_0=0, t_end=180, w_0=w_0_eight,
+                                       f=hf.eight_component_w_RHS_extended, step_function=hf.RK4_step,
+                                       fence=False, kf=k_f_array[i], FW0=0)
+
+        # Extract the solution components
+        theta_RK4 = w_matrix_RK4[:, 0]  # Angular displacement
+        x_C_RK4 = w_matrix_RK4[:, 1]  # x-coordinate of the center of mass
+        y_C_RK4 = w_matrix_RK4[:, 2]  # y-coordinate of the center of mass
+        s_L_RK4 = w_matrix_RK4[:, 3]  # Load position relative to the center of mass
+        omega_RK4 = w_matrix_RK4[:, 4]  # Angular velocity
+        vL_RK4 = w_matrix_RK4[:, 7]  # Load velocity
+
+        # Animate the deck movement using the extracted solution components
+        ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, stepsize=0.01)
 
 
