@@ -28,3 +28,6 @@ plotting.plot_pendulum_results(fence=False)
 
 # Plotting the results of the mass pendulum simulation with a fence
 plotting.plot_pendulum_results(fence=True)
+
+# Plotting the effect of damping on the angle of a system over time
+plotting.plot_damping_effect()
