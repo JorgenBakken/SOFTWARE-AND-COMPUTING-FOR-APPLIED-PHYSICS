@@ -97,3 +97,49 @@ def animate(M, theta, t, xC, yC, sL, fence=False):
     # Return the updated plot elements
     return ax, boat, deck, load, CM, left_fence, right_fence, textbox_theory
 
+
+def animate_deck_movement(t, theta, x_C, y_C, s_L=[], fence=False, stepsize=0.01, show_axis_values=False):
+    """
+    Creates an animation that shows the dynamics of the ship's deck movement.
+
+    Parameters:
+        t (array): Array of time values for which the system's \vec{w} has been calculated
+        theta (array): Array of the ship's angular displacements
+        x_C (array): Array of x-coordinate values for the center of mass
+        y_C (array): Array of y-coordinate values for the center of mass
+        s_L (array, optional): Array of the load's position relative to the center of mass
+        fence (bool, optional): Flag indicating whether to draw fences on the ship
+        stepsize (float, optional): Time interval between each frame
+        show_axis_values (bool, optional): If True, axis values will be visible, making the animation slightly less smooth
+
+    Returns:
+        Animation showing the dynamics of the ship's movement.
+    """
+    global fig, ax
+    fig, ax = plt.subplots()
+
+    # Calculate the time step
+    dt = t[1] - t[0]
+
+    # Determine the number of frames to skip based on the desired step size
+    skips = max(int(stepsize / dt), 1)
+
+    # Extract the subset of data for animation
+    theta_anim = theta[::skips]
+    t_anim = t[::skips]
+    x_C_anim = x_C[::skips]
+    y_C_anim = y_C[::skips]
+
+    # If load positions are not provided, use a default value
+    if len(s_L) == 0:
+        s_L_anim = -42 * np.ones(len(theta_anim))
+    else:
+        s_L_anim = s_L[::skips]
+
+    # Create the animation using the animate function
+    h_anim = animation.FuncAnimation(fig, animate, init_func=init_anim, frames=len(t_anim) - 1, interval=1,
+                                     blit=not show_axis_values,
+                                     fargs=(theta_anim, t_anim, x_C_anim, y_C_anim, s_L_anim, fence))
+    
+    # Display the animation
+    plt.show()
