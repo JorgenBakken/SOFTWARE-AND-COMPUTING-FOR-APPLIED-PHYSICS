@@ -455,3 +455,52 @@ def calculate_capsizing(dt):
 
     return capsizing_omega, capsizing_time 
 
+def calculate_mass_pendulum(mass, fence=False):
+    '''
+    Simulate the mass pendulum dynamics.
+
+    Inputs:
+    - mass: A string indicating the mass type ('small' or 'large').
+    - fence: A boolean indicating whether to include a fence. Default is False.
+
+    Returns:
+    - t: An array of time values.
+    - theta: An array of angle values.
+    - x_C: An array of x-coordinate values of the center of mass.
+    - y_C: An array of y-coordinate values of the center of mass.
+    - s_L: An array of positions of the small mass relative to M.
+    - omega: An array of angular velocity values.
+    - vL: An array of velocity values of the large mass.
+    '''
+
+    # Set initial conditions
+    theta_0 = 0
+    omega_0 = 0.2
+    w_0_eight = np.asarray([theta_0, 0, sv.yC0, 0, omega_0, 0, 0, 0])
+
+    # Determine the mass of the small or large mass
+    if mass == 'small':
+        m = 0.001  # Mass of the small mass
+    elif mass == 'large':
+        m = 0.08  # Mass of the large mass
+    else:
+        raise ValueError("Invalid mass option. Choose 'small' or 'large'.")
+
+    # Set the initial position of the large mass based on the mass type
+    w_0_eight[3] = 3 if mass == 'large' else 0
+
+    # Solve the ODEs
+    t, w_matrix = solve_ODE(dt=0.01, t_0=0, t_end=20, w_0=w_0_eight, f=eight_component_w_RHS,
+                            step_function=RK4_step, fence=fence)
+
+    # Extract the results
+    theta = w_matrix[:, 0]
+    x_C = w_matrix[:, 1]
+    y_C = w_matrix[:, 2]
+    s_L = w_matrix[:, 3]
+    omega = w_matrix[:, 4]
+    vL = w_matrix[:, 7]
+
+    return t, theta, x_C, y_C, s_L, omega, vL
+
+
