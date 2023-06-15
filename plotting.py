@@ -162,7 +162,26 @@ def plot_angle(t, theta1, theta2, label1, label2):
     plt.legend()
     plt.show()
 
+def plot_position(t, s1, s2, label1, label2):
+    '''
+    Plot the position of the load relative to M.
 
+    Inputs:
+    - t: An array of time values.
+    - s: An array of position values.
+    - label: A string indicating the label for the plot.
+
+    Returns:
+    None
+    '''
+    plt.plot(t, s1, label=label1)
+    plt.plot(t, s2, label=label2)
+    plt.title('Position of load relative to M')
+    plt.xlabel('$t$ (s)', fontsize=14)
+    plt.ylabel('$s_L$ (m)', fontsize=14)
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
 def plot_pendulum_results(fence):
     '''
