@@ -22,3 +22,9 @@ plotting.plot_ship_coordinates(dt=0.01)
 
 # Plotting the time it takes for the ship to capsize as a function of angular velocity
 plotting.plot_capsizing(dt=0.01)
+
+# Plotting the results of the mass pendulum simulation without a fence
+plotting.plot_pendulum_results(fence=False)
+
+# Plotting the results of the mass pendulum simulation with a fence
+plotting.plot_pendulum_results(fence=True)
