@@ -140,3 +140,28 @@ def plot_capsizing(dt):
     plt.title('Time to Capsizing as a Function of Angular Velocity (-1 if it does not capsize)')
     plt.grid(True)
     plt.show()
+
+
+def plot_pendulum_results(fence):
+    '''
+    Plot the results of the mass pendulum simulation.
+
+    Inputs:
+    - fence: A boolean indicating whether to include a fence.
+
+    Returns:
+    None
+    '''
+
+    # Simulate the pendulum for the small and large masses
+    t_s, theta_s, x_s, y_s, s_s, omega_s, v_s = hf.calculate_mass_pendulum(mass='small', fence=fence)
+    t_l, theta_l, x_l, y_l, s_l, omega_l, v_l = hf.calculate_mass_pendulum(mass='large', fence=fence)
+
+    # Plot angle
+    plot_angle(t_l, theta_l, theta_s, label1=r"$m_L = 0.08m$", label2="$m_L = 0.001m$")
+
+    # Plot position of load relative to M
+    plot_position(t_l, s_l, s_s, label1=r"$m_L = 0.08m$", label2=r"$m_L = 0.001m$")
+
+
+
