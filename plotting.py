@@ -205,4 +205,41 @@ def plot_pendulum_results(fence):
     plot_position(t_l, s_l, s_s, label1=r"$m_L = 0.08m$", label2=r"$m_L = 0.001m$")
 
 
+def plot_damping_effect():
+    """
+    Plot the damping effect on the angle of a system over time.
+    
+    Inputs:
+    None
+    
+    Returns:
+    None
+    """
+    theta_0 = 0
+    omega_0 = 0.4
+    w_0_eight = np.asarray([theta_0, 0, sv.yC0, 0, omega_0, 0, 0, 0])
+    mL = 0
+    k_f_array = np.asarray([10, 500, 2000, 4000])
+
+    for i in range(len(k_f_array)):
+        t, w_matrix_RK4 = hf.solve_ODE(dt=0.01, t_0=0, t_end=180, w_0=w_0_eight,
+                                    f=hf.eight_component_w_RHS_extended, step_function=hf.RK4_step,
+                                    fence=False, kf=k_f_array[i], FW0=0)
+
+        theta_RK4 = w_matrix_RK4[:, 0]
+        x_C_RK4 = w_matrix_RK4[:, 1]
+        y_C_RK4 = w_matrix_RK4[:, 2]
+        s_L_RK4 = w_matrix_RK4[:, 3]
+        omega_RK4 = w_matrix_RK4[:, 4]
+        vL_RK4 = w_matrix_RK4[:, 7]
+
+        plt.plot(t, theta_RK4 * 180 / np.pi, label=r"$k_f = %.1f$" % (k_f_array[i]))
+
+    plt.xlabel('$t$ (s)', fontsize=20)
+    plt.ylabel(r'$\theta$ (degrees)', fontsize=20)
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+
 
