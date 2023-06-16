@@ -1,7 +1,7 @@
 import numpy as np
-import help_functions as hf
 import matplotlib.pyplot as plt
 
+import help_functions as hf
 import ship_variables as sv
 import ship_variables as gv
 import plotting
@@ -35,7 +35,15 @@ plotting.plot_damping_effect()
 # Calling the animate_damping_effect function to generate an animation illustrating the effect of damping on the system over time. 
 # This function simulates the motion of a mass pendulum system with different damping coefficients and produces an animation to visually demonstrate the behavior. 
 # The animation showcases the movement of the pendulum and how it responds to the presence of damping.
-plotting.animate_damping_effect()
+plotting.animate_damping_effect(dt=0.01, 
+                                t_0=0, 
+                                t_end=180,
+                                step_function=hf.RK4_step,
+                                FW0=0,
+                                theta = 0,
+                                omega = 0.4, 
+                                y = sv.yC0,
+                                k_f_array = np.asarray([10, 500, 2000, 4000]))
 
 # Calling the animate_angle_with_fence function to generate an animation and plot the angle of a system with a fence over time.
 # This function animates the movement of the system's deck and simultaneously plots the angle variation.
