@@ -330,8 +330,8 @@ def animate_angle_with_fence(dt, t_0, t_end, theta, omega, y, kf, step_function,
     w_0 = np.asarray([theta, 0, y, 0, omega, 0, 0, 0])
 
     # Solve the ODE and obtain the time and state matrices
-    t, w_matrix_RK4 = hf.solve_ODE(dt, t_0, t_end, w_0,
-                                   step_function, fence=True, kf=kf, FW0=FW0, omegaW=omegaW)
+    t, w_matrix_RK4 = hf.solve_ODE(dt, t_0, t_end, w_0, f=hf.eight_component_w_RHS_extended,
+                                   step_function=step_function, fence=True, kf=kf, FW0=FW0, omegaW=omegaW)
 
     # Extract the relevant quantities from the state matrix
     theta_RK4 = w_matrix_RK4[:, 0]
@@ -340,6 +340,6 @@ def animate_angle_with_fence(dt, t_0, t_end, theta, omega, y, kf, step_function,
     s_L_RK4 = w_matrix_RK4[:, 3]
 
     # Animate the deck movement with the given quantities
-    sv.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, fence=True, stepsize=0.1)
+    ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, fence=True, stepsize=0.1)
 
 
