@@ -39,5 +39,14 @@ plotting.animate_damping_effect()
 
 # Calling the animate_angle_with_fence function to generate an animation and plot the angle of a system with a fence over time.
 # This function animates the movement of the system's deck and simultaneously plots the angle variation.
-plotting.animate_angle_with_fence()
+plotting.animate_angle_with_fence(dt = 0.01,
+                                  t_0 = 0,
+                                  t_end = 240,
+                                  theta = 0,
+                                  omega = 2.0 * np.pi / 180,
+                                  y = sv.yC0,
+                                  kf = 100,
+                                  step_function=hf.RK4_step, 
+                                  FW0=sv.FW0,
+                                  omegaW=sv.omegaW)
 
