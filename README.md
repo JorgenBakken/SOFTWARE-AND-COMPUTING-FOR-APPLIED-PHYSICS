@@ -1,62 +1,48 @@
+This project focuses on studying the dynamics and stability characteristics of a ship model. The model used is a long, semicircular ship rocking about an axis in the longitudinal direction. Various factors influencing the ship's behavior are considered, including its external forces, friction constants, and the presence of a moving load on the deck.
 
-# Equations of Motion
+## Table on contents 
 
-To describe the motion/dynamics of the ship, I will use Newton's second law for translational and rotational motion. The equation that describes the translational motion is given by:
+- [Introduction](#introduction)
+- [Ship Model](#ship-model)
+- [External Forces on the Ship](#external-forces-on-the-ship)
+- [Harmonic Oscillations](#harmonic-oscillations)
+- [Moving Load](#moving-load)
+- [Equations of Motion](#equations-of-motion)
+- [Getting Started](#getting-started)
 
-$$
-\sum \mathbf{F} = m \mathbf{A} = m \frac{d\mathbf{V}}{dt} = \frac{d^2\mathbf{R}}{dt^2}
-$$
+<!----><a name="introduction"></a>
+### Introduction
+The Vasa, a Swedish warship, serves as inspiration for this project. It sank during its inaugural voyage in 1628 and was later raised in 1961. The ship's instability and subsequent sinking provide a real-world case study to explore the dynamics and stability of ships.
 
-where $\mathbf{A}$, $\mathbf{V}$, and $\mathbf{R}$ are the acceleration, velocity, and position of the ship's center of mass, respectively. In component form, we can write $\mathbf{R} = (x_C, y_C)$. The rotational motion is given by:
+<!----><a name="ship-model"></a>
+### Ship Model
+The ship model used in this project is a long, semicircular ship. It can be either compact, with a constant mass density, or hollow, with a thin hull and deck. The center of mass of the ship, denoted as C, is located at a specific distance below the midpoint of the deck. The volume of water displaced by the ship varies as it rocks, and the dynamics are described using sector angles and displaced water areas.
 
-$$
-\sum \tau = I_C \frac{d\omega}{dt}
-$$
+<!----><a name="external-forces-on-the-ship"></a>
+### External Forces on the Ship
+In addition to gravity, the ship experiences external forces such as buoyancy, friction, and wind. The buoyant force, acting at the center of gravity of the displaced water, counteracts the ship's weight. Frictional forces between the ship and water contribute to damping effects, while wind forces act horizontally.
 
-where $\tau$ represents the torque and $I_C$ is the moment of inertia about the axis passing through the center of mass.
+<!----><a name="harmonic-oscillations"></a>
+### Harmonic Oscillations 
+When considering only gravity and buoyancy as external forces, the ship behaves as a harmonic oscillator. Its motion is characterized by small oscillations around the equilibrium position. The ship's angular frequency, period, and damping are derived based on its physical properties.
 
-I will add a moving load on the ship's deck, whcih will result in a contact force from the load on the ship, contributing to both $\mathbf{F}$ and $\tau$. The forces acting on the ship are:
+<!----><a name="moving-load"></a>
+### Moving Load 
+The presence of a moving load on the ship's deck introduces additional dynamics and affects stability. The load is modeled as a point mass initially at rest. Its motion is governed by gravity and the normal force from the deck. Frictional effects between the load and deck can also be included in the model.
 
-$$
-F_G = -mg \quad \text{(Gravitational force in the y-direction)}
-$$
+<!----><a name="equations-of-motion"></a>
+### Equations of Motion
+To describe the ship's motion, Newton's second law is applied to the center of mass and rotational motion. The equations of motion consider the forces acting on the ship, including gravity, buoyancy, friction, wind, and the contact forces from the moving load. These equations provide insights into the ship's behavior and stability.
 
-$$
-F_B = A\sigma_0g \quad \text{(Boyancy force in the y-direction)}
-$$
+<!----><a name="getting-started"></a>
+### Getting Started
+To get started with this project, follow these steps:
 
-$$
-f = -k_fR\gamma\omega \quad \text{(Friction force in the x-direction)}
-$$
+Clone the repository to your local machine.
+Ensure you have the required dependencies and libraries installed.
+Open the project in your preferred programming environment.
 
-$$
-F_w = F_0\cos(\omega_wt) \quad \text{(Wind force in the x-direction)}
-$$
+Usage
 
-$$
-F_L^y = -m_Lg\cos^2\theta \quad \text{(Load force in the y-direction)}
-$$
+Once the project is set up, you can explore different scenarios and parameters to analyze the ship's dynamics and stability. Adjust the ship's properties, external forces, and the presence of a moving load to observe their effects on the system. Analyze the resulting motion, oscillations, and stability characteristics. To get more background info about the project, and more detailed physics, read the Vasa_Ship.pdf.
 
-$$
-F_L^x = m_Lg\cos\theta\sin\theta \quad \text{(Load forece in the x-direction)}
-$$
-
-The torques acting on the ship will vary both in terms of the magnitude of the force and the distance between the center of mass and the extension of the force ("arm"). For simplicity, we provide all the expressions for the different torques acting on the ship with respect to the axis through C:
-
-$$
-\tau_B = -F_B h \sin\theta  \quad \text{(Boyancy torque)}
-$$
-
-$$
-\tau_f = f(y_C - (R(\cos(\gamma/2)) - 1)) \quad \text{(Frictional torque)}
-$$
-
-$$
-\tau_w = F_w y_C \quad \text{(Wind torque)}
-$$
-
-$$
-\tau_L = -m_L g \cos\theta s_L \quad \text{(Lift torque)}
-$$
-
-In this project, I will solve the coupled system of differential equations given by the equations in this section. This will be done step by step, gradually adding the different forces.
