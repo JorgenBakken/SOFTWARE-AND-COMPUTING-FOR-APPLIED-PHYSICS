@@ -6,6 +6,8 @@ import help_functions as hf
 import ship_variables as sv
 import create_animation as ca
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def plot_small_angle_approx(dt):
     '''
     Plot the comparison between the full equation and small angle approximation solutions for a simple harmonic oscillator.
@@ -50,6 +52,7 @@ def plot_small_angle_approx(dt):
 
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def plot_error_step_function(dt_array, theta_0, omega_freq):
     '''
@@ -87,6 +90,8 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
     ax.set_xscale("log")
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def plot_ship_coordinates(dt):
     '''
     Plot the ship's x-coordinate and y-coordinate as functions of time, taking into account the varying water displacement area.
@@ -120,6 +125,8 @@ def plot_ship_coordinates(dt):
     plt.tight_layout()
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def plot_capsizing(dt):
     '''
     Plot the time it takes for the ship to capsize as a function of angular velocity.
@@ -142,6 +149,8 @@ def plot_capsizing(dt):
     plt.grid(True)
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def plot_angle(t, theta1, theta2, label1, label2):
     '''
     Plot the angle of the mass pendulum.
@@ -162,6 +171,8 @@ def plot_angle(t, theta1, theta2, label1, label2):
     plt.grid(True)
     plt.legend()
     plt.show()
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def plot_position(t, s1, s2, label1, label2):
     '''
@@ -184,6 +195,8 @@ def plot_position(t, s1, s2, label1, label2):
     plt.legend()
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def plot_pendulum_results(fence):
     '''
     Plot the results of the mass pendulum simulation.
@@ -205,6 +218,7 @@ def plot_pendulum_results(fence):
     # Plot position of load relative to M
     plot_position(t_l, s_l, s_s, label1=r"$m_L = 0.08m$", label2=r"$m_L = 0.001m$")
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def plot_damping_effect():
     """
@@ -242,6 +256,8 @@ def plot_damping_effect():
     plt.legend()
     plt.show()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def animate_damping_effect():
     """
     Animates the damping effect on the ship's deck movement.
@@ -277,7 +293,8 @@ def animate_damping_effect():
 
         # Animate the deck movement using the extracted solution components
         ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, stepsize=0.01)
-
+        
+#---------------------------------------------------------------------------------------------------------------------------
 
 def animate_angle_with_fence():
     """

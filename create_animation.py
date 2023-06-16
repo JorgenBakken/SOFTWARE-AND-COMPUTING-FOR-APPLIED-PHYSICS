@@ -4,6 +4,8 @@ import numpy as np
 
 import ship_variables as sv
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def init_anim():
     """ 
     Initializes the animation.
@@ -36,6 +38,8 @@ def init_anim():
 
     # Return the initialized plot elements
     return ax, boat, deck, load, CM, left_fence, right_fence, textbox_theory
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def animate(M, theta, t, xC, yC, sL, fence=False):
     '''
@@ -97,6 +101,7 @@ def animate(M, theta, t, xC, yC, sL, fence=False):
     # Return the updated plot elements
     return ax, boat, deck, load, CM, left_fence, right_fence, textbox_theory
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def animate_deck_movement(t, theta, x_C, y_C, s_L=[], fence=False, stepsize=0.01, show_axis_values=False):
     """

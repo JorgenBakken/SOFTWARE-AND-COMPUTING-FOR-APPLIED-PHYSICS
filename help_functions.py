@@ -1,5 +1,8 @@
 import numpy as np
+
 import ship_variables as sv
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def gamma_func(theta, dyC):
     """
@@ -23,6 +26,8 @@ def gamma_func(theta, dyC):
 
     return gamma
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def euler_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     """
     Performs one Euler step to solve the ODE dw/dt = f(w).
@@ -44,6 +49,7 @@ def euler_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0)
     w_new = w + dt * f(t, w, fence, kf=kf, omegaW=omegaW, FW0=FW0)
     return w_new
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def RK4_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     """
@@ -70,6 +76,7 @@ def RK4_step(f, t, w, dt, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     w_new = w + (dt / 6) * (k1 + (2 * k2) + (2 * k3) + k4)
     return w_new
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def find_num_steps(t_0 ,t_end, dt):
     '''
@@ -81,6 +88,8 @@ def find_num_steps(t_0 ,t_end, dt):
     '''
     return int(np.ceil((t_end - t_0) / dt)) + 1 
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def find_actual_dt(t_0, t_end, num_steps):
     '''
     Function that corrects the step size such that we can move from t_0 to t_end by only full steps 
@@ -90,6 +99,7 @@ def find_actual_dt(t_0, t_end, num_steps):
     '''
     return (t_end - t_0) / num_steps
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def solve_ODE(dt, t_0, t_end, w_0, f, step_function=RK4_step, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     """
@@ -152,6 +162,7 @@ def solve_ODE(dt, t_0, t_end, w_0, f, step_function=RK4_step, fence=False, kf=sv
 
     return t_array, w_matrix
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def two_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
@@ -180,6 +191,8 @@ def two_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW
     updated_w[1] = -sv.m * sv.g * sv.h * np.sin(w[0]) / sv.IC
 
     return updated_w
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def two_component_w_RHS_small_angle(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
@@ -210,6 +223,8 @@ def two_component_w_RHS_small_angle(t, w, fence=False, kf=sv.kf, omegaW=sv.omega
     updated_w[1] = - sv.m * sv.g * sv.h * w[0] / sv.IC
 
     return updated_w
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def error_as_func_of_dt(target, dt_array, t_0, t_end, step_function, theta_0):
     '''
@@ -249,6 +264,8 @@ def error_as_func_of_dt(target, dt_array, t_0, t_end, step_function, theta_0):
 
     return actual_dt_array, error_array
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def linear_function(x, a, b):
     '''
     Compute the value of a linear function given the input x.
@@ -263,6 +280,8 @@ def linear_function(x, a, b):
     '''
     return a * x + b
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def analytical_solution_small_angle(t, theta_0, omega_freq):
     '''
     Calculate the analytical solution for the angle of a simple harmonic oscillator with small angle approximation.
@@ -276,6 +295,8 @@ def analytical_solution_small_angle(t, theta_0, omega_freq):
     The analytical solution
     '''
     return theta_0 * np.cos(t * omega_freq)
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def six_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
@@ -312,6 +333,7 @@ def six_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW
 
     return updated_w
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def eight_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
@@ -361,6 +383,7 @@ def eight_component_w_RHS(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.
 
     return updated_w
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 def eight_component_w_RHS_extended(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW, FW0=sv.FW0):
     '''
@@ -415,6 +438,8 @@ def eight_component_w_RHS_extended(t, w, fence=False, kf=sv.kf, omegaW=sv.omegaW
 
     return updated_w
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 def calculate_capsizing(dt):
     '''
     Calculate the time it takes for the ship to capsize for different angular velocities.
@@ -454,6 +479,8 @@ def calculate_capsizing(dt):
             capsizing_time.append(-1)
 
     return capsizing_omega, capsizing_time 
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 def calculate_mass_pendulum(mass, fence=False):
     '''
