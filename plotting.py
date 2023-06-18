@@ -92,12 +92,17 @@ def plot_error_step_function(dt_array, theta_0, omega_freq):
 
 #---------------------------------------------------------------------------------------------------------------------------
 
-def plot_ship_coordinates(dt):
+def plot_ship_coordinates(dt, t_0, t_end, theta, y, step_function):
     '''
     Plot the ship's x-coordinate and y-coordinate as functions of time, taking into account the varying water displacement area.
 
     Inputs:
-    dt      : Time step size
+    dt: Time step size
+    t_0: Initial time
+    t_end: End time
+    theta: Initial angle
+    y: Initial vertical displacement
+    step_function: Step function for numerical integration
 
     Returns:
     None
@@ -106,10 +111,10 @@ def plot_ship_coordinates(dt):
     fig, axs = plt.subplots(ncols=2)
 
     # Set initial conditions
-    w_0 = np.asarray([20 * np.pi/180, 0 , sv.yC0, 0, 0, 0])
+    w_0 = np.asarray([theta, 0 , y, 0, 0, 0])
 
     # Solve the ODE using RK4 method
-    t_array, w_matrix = hf.solve_ODE(dt, t_0=0, t_end=20, w_0=w_0, f=hf.six_component_w_RHS, step_function=hf.RK4_step)
+    t_array, w_matrix = hf.solve_ODE(dt = dt, t_0=t_0, t_end=t_end, w_0=w_0, f=hf.six_component_w_RHS, step_function=step_function)
 
     # Plot x-coordinate
     axs[0].set_ylabel(r"$x$")
