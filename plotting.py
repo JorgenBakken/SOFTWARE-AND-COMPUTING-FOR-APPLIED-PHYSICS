@@ -306,16 +306,16 @@ def animate_angle_with_fence(dt, t_0, t_end, theta, omega, y, kf, step_function,
     Animate and plot the angle of a system with a fence over time.
 
     Inputs:
-    dt: Time step for solving the ODE
-    t_0: Initial time
-    t_end: End time
-    theta: Initial angle
-    omega: Initial angular velocity
-    y: Initial vertical displacement
-    kf: Friction coefficient
-    step_function: ODE integration step function
-    omegaW : Resonance frequency of the water
-    FW0    : Initial force of the water 
+    dt            : Time step for solving the ODE
+    t_0           : Initial time
+    t_end         : End time
+    theta         : Initial angle
+    omega         : Initial angular velocity
+    y             : Initial vertical displacement
+    kf            : Friction coefficient
+    step_function : ODE integration step function
+    omegaW        : Resonance frequency of the water
+    FW0           : Initial force of the water 
 
     Returns:
     None
