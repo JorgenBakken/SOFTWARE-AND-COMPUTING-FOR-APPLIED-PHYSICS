@@ -30,7 +30,15 @@ plotting.plot_pendulum_results(fence=False)
 plotting.plot_pendulum_results(fence=True)
 
 # Plotting the effect of damping on the angle of a system over time
-plotting.plot_damping_effect()
+plotting.plot_damping_effect(theta = 0,
+                             omega = 0.4,
+                             k_f_array = np.asarray([10, 500, 2000, 4000]),
+                             dt = 0.01,
+                             t_0 = 0,
+                             t_end = 180,
+                             fence = False,
+                             FW0 = 0, 
+                             y = sv.yC0)
 
 # Calling the animate_damping_effect function to generate an animation illustrating the effect of damping on the system over time. 
 # This function simulates the motion of a mass pendulum system with different damping coefficients and produces an animation to visually demonstrate the behavior. 
