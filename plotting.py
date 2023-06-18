@@ -265,15 +265,15 @@ def animate_damping_effect(dt, t_0, t_end, step_function, FW0, theta, omega, y, 
     using the Runge-Kutta 4th order method for different damping coefficients.
 
     Inputs:
-    dt: Time step for solving the ODE
-    t_0: Initial time
-    t_end: End time
-    step_function: ODE integration step function
-    FW0: Fence deflection at t = 0
-    theta: Initial angle
-    omega: Initial angular velocity
-    y: Initial vertical displacement
-    k_f_array: Array of damping coefficients
+    dt             : Time step for solving the ODE
+    t_0            : Initial time
+    t_end          : End time
+    step_function  : ODE integration step function
+    FW0            : Fence deflection at t = 0
+    theta          : Initial angle
+    omega          : Initial angular velocity
+    y              : Initial vertical displacement
+    k_f_array      : Array of damping coefficients
 
     Returns:
         None
