@@ -220,33 +220,32 @@ def plot_pendulum_results(fence):
 
 #---------------------------------------------------------------------------------------------------------------------------
 
-def plot_damping_effect():
+def plot_damping_effect(theta, omega, k_f_array, dt, t_0, t_end, fence, FW0, y):
     """
     Plot the damping effect on the angle of a system over time.
     
     Inputs:
-    None
+    theta    : Initial angle
+    omega    : Initial angular velocity
+    k_f_array: Array of damping coefficients
+    dt       : Time step for solving the ODE
+    t_0      : Initial time
+    t_end    : End time
+    fence    : Boolean indicating whether there is a fence
+    FW0      : Initial force of the water 
+    y        : Initial vertical displacement
     
     Returns:
     None
     """
-    theta_0 = 0
-    omega_0 = 0.4
-    w_0_eight = np.asarray([theta_0, 0, sv.yC0, 0, omega_0, 0, 0, 0])
-    mL = 0
-    k_f_array = np.asarray([10, 500, 2000, 4000])
+    w = np.asarray([theta, 0, y, 0, omega, 0, 0, 0])
 
     for i in range(len(k_f_array)):
-        t, w_matrix_RK4 = hf.solve_ODE(dt=0.01, t_0=0, t_end=180, w_0=w_0_eight,
-                                    f=hf.eight_component_w_RHS_extended, step_function=hf.RK4_step,
-                                    fence=False, kf=k_f_array[i], FW0=0)
+        t, w_matrix_RK4 = hf.solve_ODE(dt=dt, t_0=t_0, t_end=t_end, w_0=w,
+                                       f=hf.eight_component_w_RHS_extended, step_function=hf.RK4_step,
+                                       fence=fence, kf=k_f_array[i], FW0=FW0)
 
         theta_RK4 = w_matrix_RK4[:, 0]
-        x_C_RK4 = w_matrix_RK4[:, 1]
-        y_C_RK4 = w_matrix_RK4[:, 2]
-        s_L_RK4 = w_matrix_RK4[:, 3]
-        omega_RK4 = w_matrix_RK4[:, 4]
-        vL_RK4 = w_matrix_RK4[:, 7]
 
         plt.plot(t, theta_RK4 * 180 / np.pi, label=r"$k_f = %.1f$" % (k_f_array[i]))
 
@@ -301,10 +300,6 @@ def animate_damping_effect(dt, t_0, t_end, step_function, FW0, theta, omega, y, 
         ca.animate_deck_movement(t, theta_RK4, x_C_RK4, y_C_RK4, s_L_RK4, stepsize=0.01)
 
 #---------------------------------------------------------------------------------------------------------------------------
-
-import numpy as np
-import helper_functions as hf  # Assuming you have a separate module/file for helper functions
-import system_visualization as sv  # Assuming you have a separate module/file for visualization
 
 def animate_angle_with_fence(dt, t_0, t_end, theta, omega, y, kf, step_function, FW0, omegaW):
     """
