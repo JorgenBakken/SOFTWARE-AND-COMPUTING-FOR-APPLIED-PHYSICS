@@ -18,10 +18,15 @@ omega_freq = np.sqrt(sv.m * sv.g * sv.h / sv.IC)
 plotting.plot_error_step_function(dt_array, theta_0, omega_freq)
 
 # Plotting the ship's x-coordinate and y-coordinate as functions of time
-plotting.plot_ship_coordinates(dt=0.01)
+plotting.plot_ship_coordinates(dt = 0.01, 
+                               t_0=0,
+                               t_end=20,
+                               theta = 20 * np.pi/180,
+                               y = sv.yC0,
+                               step_function=hf.RK4_step)
 
 # Plotting the time it takes for the ship to capsize as a function of angular velocity
-plotting.plot_capsizing(dt=0.01)
+plotting.plot_capsizing(dt = 0.01)
 
 # Plotting the results of the mass pendulum simulation without a fence
 plotting.plot_pendulum_results(fence=False)
