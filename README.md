@@ -44,5 +44,5 @@ Open the project in your preferred programming environment.
 
 Usage
 
-Once the project is set up, you can explore different scenarios and parameters to analyze the ship's dynamics and stability. Adjust the ship's properties, external forces, and the presence of a moving load to observe their effects on the system. Analyze the resulting motion, oscillations, and stability characteristics. To get more background info about the project, and more detailed physics, read the Vasa_Ship.pdf.
+Once the project is set up, you can explore different scenarios and parameters to analyze the ship's dynamics and stability. Adjust the ship's properties, external forces, and the presence of a moving load to observe their effects on the system. Analyze the resulting motion, oscillations, and stability characteristics. To get more background info about the project, and more detailed physics, read the Vasa_ship.pdf.
 
